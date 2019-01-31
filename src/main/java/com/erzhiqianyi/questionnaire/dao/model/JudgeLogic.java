@@ -18,8 +18,11 @@ public class JudgeLogic {
 
     private Long questionnaireId;
 
-    private Integer score;
+    private Integer minScore;
 
+    private Integer maxScore;
+
+    @Enumerated(EnumType.STRING)
     private LogicSymbol symbol;
 
     private String message;

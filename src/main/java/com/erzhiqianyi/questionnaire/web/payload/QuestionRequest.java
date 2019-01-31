@@ -1,6 +1,7 @@
 package com.erzhiqianyi.questionnaire.web.payload;
 
 import com.erzhiqianyi.questionnaire.dao.model.QuestionType;
+import com.erzhiqianyi.questionnaire.dao.model.Required;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.ToString;
@@ -14,9 +15,9 @@ import java.util.List;
 @Getter
 @ToString
 public class QuestionRequest {
-    @NotBlank(message = " title must not be blank")
+    @NotBlank(message = " content must not be blank")
     @Size(max = 100)
-    private String title;
+    private String content;
 
     @NotNull
     private QuestionType type;
@@ -28,6 +29,6 @@ public class QuestionRequest {
     @NotNull
     private List<AnswerRequest> answer;
 
-    private Boolean required;
+    private Required required;
 
 }

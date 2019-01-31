@@ -1,22 +1,41 @@
 package com.erzhiqianyi.questionnaire.service.impl;
 
+import com.erzhiqianyi.questionnaire.dao.model.Answer;
+import com.erzhiqianyi.questionnaire.dao.model.JudgeLogic;
+import com.erzhiqianyi.questionnaire.dao.model.Question;
 import com.erzhiqianyi.questionnaire.dao.model.Questionnaire;
+import com.erzhiqianyi.questionnaire.dao.repository.AnswerRepository;
+import com.erzhiqianyi.questionnaire.dao.repository.JudgeLogicRepository;
+import com.erzhiqianyi.questionnaire.dao.repository.QuestionRepository;
 import com.erzhiqianyi.questionnaire.dao.repository.QuestionnaireRepository;
 import com.erzhiqianyi.questionnaire.service.QuestionnaireService;
 import com.erzhiqianyi.questionnaire.web.payload.JudgeLogicRequest;
 import com.erzhiqianyi.questionnaire.web.payload.QuestionRequest;
 import com.erzhiqianyi.questionnaire.web.payload.QuestionnaireRequest;
 import com.erzhiqianyi.questionnaire.web.vo.ResponseResult;
+import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors;
+
 
 @Service
 public class QuestionnaireServiceImpl implements QuestionnaireService {
 
     @Autowired
     private QuestionnaireRepository questionnaireRepository;
+
+    @Autowired
+    private QuestionRepository questionRepository;
+
+    @Autowired
+    private AnswerRepository answerRepository;
+
+    @Autowired
+    private JudgeLogicRepository judgeLogicRepository;
 
     @Override
     public ResponseResult<Long> createQuestionnaire(QuestionnaireRequest request) {
@@ -32,26 +51,48 @@ public class QuestionnaireServiceImpl implements QuestionnaireService {
         if (null == questionnaireId) {
             return ResponseResult.error(" create questionnaire fail ");
         }
-        if (null != request.getQuestions()) {
-            request.getQuestions().stream()
-                    .forEach(questionRequest ->
-                            saveQuestion(questionRequest, questionnaireId)
-                    );
-        }
 
-        if (null != request.getJudgeLogic()) {
-            request.getJudgeLogic().stream()
-                    .forEach(judgeLogicRequest ->
-                            saveJudgeLogic(judgeLogicRequest, questionnaireId));
+        saveQuestion(request.getQuestions(), questionnaireId);
 
-        }
+        saveJudgeLogic(request.getJudgeLogic(), questionnaireId);
+
         return ResponseResult.success("create questionnaire  success", questionnaireId);
     }
 
-    private void saveJudgeLogic(JudgeLogicRequest judgeLogicRequest, Long questionnaireId) {
+    private void saveQuestion(List<QuestionRequest> questionRequest, Long questionnaireId) {
+        if (null == questionRequest || null == questionnaireId) {
+            return;
+        }
+        questionRequest.forEach(request -> {
+            var question = new Question();
+            BeanUtils.copyProperties(request, question);
+            question.setQuestionnaireId(questionnaireId);
+            questionRepository.save(question);
+            Long questionId = question.getId();
+            var answers = request.getAnswer().stream()
+                    .map(answerRequest -> {
+                        var answer = new Answer();
+                        BeanUtils.copyProperties(answerRequest, answer);
+                        answer.setQuestionId(questionId);
+                        return answer;
+                    }).collect(Collectors.toList());
+            answerRepository.saveAll(answers);
+        });
     }
 
-    private void saveQuestion(QuestionRequest questionRequest, Long questionnaireId) {
+    private void saveJudgeLogic(List<JudgeLogicRequest> judgeLogicRequest, Long questionnaireId) {
+        if (null == judgeLogicRequest || null == questionnaireId) {
+            return;
+        }
+        var judgeLogics = judgeLogicRequest.stream()
+                .map(request-> {
+                    var judgeLogic = new JudgeLogic();
+                    BeanUtils.copyProperties(request,judgeLogic);
+                    judgeLogic.setQuestionnaireId(questionnaireId);
+                    return judgeLogic;
+                }).collect(Collectors.toList());
+        judgeLogicRepository.saveAll(judgeLogics);
 
     }
+
 }

@@ -20,9 +20,12 @@ public class Question {
 
     private String content;
 
+    @Enumerated(EnumType.STRING)
     private QuestionType type;
 
-    private Boolean required;
+    @Enumerated(EnumType.STRING)
+    private Required required;
+
 
     private Integer answerCount;
 
