@@ -17,6 +17,8 @@ public class Answer {
     @GeneratedValue(strategy = GenerationType.AUTO)
     private Long id;
 
+    private Long questionId;
+
     private String content;
 
     private Integer score;

@@ -7,7 +7,7 @@ import org.hibernate.annotations.DynamicUpdate;
 import javax.persistence.*;
 
 @Entity
-@Table(name = "question_answer")
+@Table(name = "questionnaire")
 @Getter
 @Setter
 @DynamicUpdate
@@ -21,6 +21,6 @@ public class Questionnaire {
 
     private String code;
 
-    
+
 
 }

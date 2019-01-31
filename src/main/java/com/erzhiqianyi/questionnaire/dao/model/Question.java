@@ -16,12 +16,16 @@ public class Question {
     @GeneratedValue(strategy = GenerationType.AUTO)
     private Long id;
 
+    private Long questionnaireId;
+
     private String content;
 
     private QuestionType type;
 
+    private Boolean required;
+
     private Integer answerCount;
 
     private Integer sort;
-    
+
 }
