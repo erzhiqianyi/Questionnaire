@@ -64,7 +64,7 @@ public class QuestionnaireServiceImpl implements QuestionnaireService {
     }
 
     @Override
-    public ResponseResult<QuestionnaireResponse> getQuestionResponseByCode(String code) {
+    public ResponseResult<QuestionnaireResponse> getQuestionnaireByCode(String code) {
         if (StringUtils.isEmpty(code)) {
             return ResponseResult.badRequest("questionnaire not exists");
         }

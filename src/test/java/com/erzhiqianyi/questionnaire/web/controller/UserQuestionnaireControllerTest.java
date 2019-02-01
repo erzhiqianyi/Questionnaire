@@ -27,17 +27,17 @@ public class UserQuestionnaireControllerTest {
     @Autowired
     private MockMvc mockMvc;
 
-    private UserQuestionnaireRequest questionnaireRequest;
+    private UserQuestionnaireRequest userQuestionnaireRequest;
 
     @Before
     public void init() {
         DataTest dataTest = new DataTest();
-        this.questionnaireRequest = dataTest.getUserQuestionnaireRequest();
+        this.userQuestionnaireRequest = dataTest.getUserQuestionnaireRequest();
     }
 
     @Test
-    public void createQuestionnaire() throws Exception {
-        String data = JsonUtil.toJson(questionnaireRequest);
+    public void createUserQuestionnaire() throws Exception {
+        String data = JsonUtil.toJson(userQuestionnaireRequest);
         mockMvc.perform(
                 post("/user/questionnaire")
                         .contentType(MediaType.APPLICATION_JSON)

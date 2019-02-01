@@ -4,6 +4,7 @@ import com.erzhiqianyi.questionnaire.dao.model.Answer;
 import com.erzhiqianyi.questionnaire.dao.model.Question;
 import com.erzhiqianyi.questionnaire.dao.model.QuestionType;
 import com.erzhiqianyi.questionnaire.dao.model.Required;
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.ToString;
@@ -27,7 +28,7 @@ public class QuestionResponse {
 
     private Integer sort;
 
-    private Required required;
+    private boolean required;
 
     private List<AnswerResponse> answers;
 
@@ -40,11 +41,15 @@ public class QuestionResponse {
         this.type = item.getType();
         this.answerCount = item.getAnswerCount();
         this.sort = item.getSort();
-        this.required = item.getRequired();
+        this.required = item.getRequired() == Required.Y;
         answers = null == answers ? new ArrayList<>() : answers;
         this.answers = answers.stream()
                 .map(AnswerResponse::new)
                 .sorted(Comparator.comparing(AnswerResponse::getSort))
                 .collect(Collectors.toList());
+
     }
+
 }
+
+
