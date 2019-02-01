@@ -7,7 +7,6 @@ import com.erzhiqianyi.questionnaire.service.JudgeLogicService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import java.util.Comparator;
 import java.util.List;
 import java.util.Optional;
 
@@ -34,15 +33,21 @@ public class JudgeLogicServiceImpl implements JudgeLogicService {
 
     @Override
     public Optional<JudgeLogic> judgeScore(Integer score, List<JudgeLogic> judgeLogics) {
-        judgeLogics.sort(Comparator.comparing(JudgeLogic::getMinScore));
-        boolean isJudge = true;
         JudgeLogic judgeLogicResult = null;
-        for (JudgeLogic judgeLogic : judgeLogics) {
-            isJudge = LogicSymbol.judgeLogic(judgeLogic, score);
-            if (!isJudge) {
-                judgeLogicResult = judgeLogic;
-                break;
+        for (JudgeLogic judgeLogic : judgeLogics ){
+            boolean isInLogic  = LogicSymbol.judgeLogic(judgeLogic,score);
+            if (isInLogic){
+                if (null == judgeLogicResult){
+                    judgeLogicResult = judgeLogic;
+                }else {
+                   judgeLogicResult = LogicSymbol.judgeBetter(judgeLogic,judgeLogicResult,score);
+                }
             }
+        }
+        if (null == judgeLogicResult){
+            judgeLogicResult = new JudgeLogic();
+            judgeLogicResult.setMessage(LogicSymbol.NO_RESULT);
+            return Optional.of(judgeLogicResult);
         }
         return Optional.of(judgeLogicResult);
     }

@@ -1,6 +1,7 @@
 package com.erzhiqianyi.questionnaire.dao.model;
 import lombok.Getter;
 import lombok.Setter;
+import lombok.ToString;
 import org.hibernate.annotations.DynamicUpdate;
 
 import javax.persistence.*;
@@ -10,6 +11,7 @@ import javax.persistence.*;
 @Getter
 @Setter
 @DynamicUpdate
+@ToString
 public class JudgeLogic {
 
     @Id
