@@ -12,10 +12,14 @@ import com.erzhiqianyi.questionnaire.service.QuestionnaireService;
 import com.erzhiqianyi.questionnaire.web.payload.JudgeLogicRequest;
 import com.erzhiqianyi.questionnaire.web.payload.QuestionRequest;
 import com.erzhiqianyi.questionnaire.web.payload.QuestionnaireRequest;
+import com.erzhiqianyi.questionnaire.web.vo.QuestionResponse;
+import com.erzhiqianyi.questionnaire.web.vo.QuestionnaireResponse;
 import com.erzhiqianyi.questionnaire.web.vo.ResponseResult;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Example;
 import org.springframework.stereotype.Service;
+import org.springframework.util.StringUtils;
 
 import java.util.List;
 import java.util.Optional;
@@ -59,6 +63,26 @@ public class QuestionnaireServiceImpl implements QuestionnaireService {
         return ResponseResult.success("create questionnaire  success", questionnaireId);
     }
 
+    @Override
+    public ResponseResult<QuestionnaireResponse> getQuestionResponseByCode(String code) {
+        if (StringUtils.isEmpty(code)) {
+            return ResponseResult.badRequest("questionnaire not exists");
+        }
+
+        Optional<Questionnaire> optional = questionnaireRepository.findByCodeOrTitle(code, null);
+        if (!optional.isPresent()) {
+            return ResponseResult.badRequest("questionnaire not exists");
+        }
+
+        var question = new Question();
+        question.setQuestionnaireId(optional.get().getId());
+        var questions = questionRepository.findAll(Example.of(question));
+        var questionIds = questions.stream().map(Question::getId).collect(Collectors.toList());
+        var answers = answerRepository.findByQuestionIdIn(questionIds);
+        var questionnaireResponse = new QuestionnaireResponse(optional.get(),questions,answers);
+        return ResponseResult.success("get success", questionnaireResponse);
+    }
+
     private void saveQuestion(List<QuestionRequest> questionRequest, Long questionnaireId) {
         if (null == questionRequest || null == questionnaireId) {
             return;
@@ -85,9 +109,9 @@ public class QuestionnaireServiceImpl implements QuestionnaireService {
             return;
         }
         var judgeLogics = judgeLogicRequest.stream()
-                .map(request-> {
+                .map(request -> {
                     var judgeLogic = new JudgeLogic();
-                    BeanUtils.copyProperties(request,judgeLogic);
+                    BeanUtils.copyProperties(request, judgeLogic);
                     judgeLogic.setQuestionnaireId(questionnaireId);
                     return judgeLogic;
                 }).collect(Collectors.toList());

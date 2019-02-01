@@ -1,5 +1,7 @@
 package com.erzhiqianyi.questionnaire.dao.model;
 
+import org.springframework.util.StringUtils;
+
 public enum  QuestionType {
     SINGLE("S","单选"),
     MULTIPLE("M","多选"),
@@ -20,4 +22,17 @@ public enum  QuestionType {
     public String getRemark() {
         return remark;
     }
+
+    public static QuestionType codeType(String code){
+        if (StringUtils.isEmpty(code)){
+            return null;
+        }
+        for (QuestionType type : values()){
+            if (type.getCode().equalsIgnoreCase(code)){
+                return type;
+            }
+        }
+        return null;
+    }
+
 }

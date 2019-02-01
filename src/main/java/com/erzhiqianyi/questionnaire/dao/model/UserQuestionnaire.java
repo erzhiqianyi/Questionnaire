@@ -17,9 +17,9 @@ public class UserQuestionnaire {
     @GeneratedValue(strategy = GenerationType.AUTO)
     private Long id;
 
-    private  Long questionnaireId;
+    private Long questionnaireId;
 
-    private Long userId;
+    private String userId;
 
     private Integer totalScore;
 

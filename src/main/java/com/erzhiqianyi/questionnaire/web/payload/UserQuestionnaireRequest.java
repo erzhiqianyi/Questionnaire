@@ -4,15 +4,23 @@ import lombok.Getter;
 import lombok.Setter;
 import lombok.ToString;
 
+import javax.validation.constraints.NotNull;
+import java.util.List;
+
 @Getter
 @Setter
 @ToString
 public class UserQuestionnaireRequest {
 
-    private String questionnaireCode;
+    @NotNull
+    private String code;
 
-    private Integer userId;
+    @NotNull
+    private String userId;
 
+    @NotNull
+    private List<UserAnswerRequest>  answers;
 
-
+    public UserQuestionnaireRequest() {
+    }
 }
