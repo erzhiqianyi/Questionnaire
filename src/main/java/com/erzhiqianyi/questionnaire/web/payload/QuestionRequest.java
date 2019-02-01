@@ -5,6 +5,7 @@ import com.erzhiqianyi.questionnaire.dao.model.Required;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.ToString;
+import org.springframework.util.StringUtils;
 
 import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.NotNull;
@@ -31,4 +32,26 @@ public class QuestionRequest {
 
     private Required required;
 
+    public QuestionRequest() {
+    }
+
+    public QuestionRequest(String csvData) {
+        if (StringUtils.isEmpty(csvData)) {
+            throw new IllegalArgumentException("csv data can't be null");
+        }
+        String[] arr = csvData.split(",");
+        if (arr.length != 5) {
+            throw new IllegalArgumentException("illegal csv data ");
+        }
+        this.content = arr[0];
+        this.type = QuestionType.codeType(arr[1]);
+        if (null == type){
+            throw new IllegalArgumentException("question type can't be null.");
+        }
+        this.answerCount = Integer.parseInt(arr[2]);
+        this.required = Required.valueOf(arr[3]);
+        this.sort = Integer.parseInt(arr[4]);
+
+
+    }
 }

@@ -2,9 +2,8 @@ package com.erzhiqianyi.questionnaire.web.controller;
 
 import com.erzhiqianyi.questionnaire.service.QuestionnaireService;
 import com.erzhiqianyi.questionnaire.web.payload.QuestionnaireRequest;
-import com.erzhiqianyi.questionnaire.web.vo.QuestionResponse;
+import com.erzhiqianyi.questionnaire.web.vo.QuestionnaireResponse;
 import com.erzhiqianyi.questionnaire.web.vo.ResponseResult;
-import lombok.Getter;
 import lombok.extern.log4j.Log4j2;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
@@ -26,7 +25,7 @@ public class QuestionnaireController {
     }
 
     @GetMapping("/code/{code}")
-    public ResponseResult<QuestionResponse> createQuestionnaire(@PathVariable String code) {
-        return ResponseResult.badRequest(" question not exists");
+    public ResponseResult<QuestionnaireResponse> createQuestionnaire(@PathVariable String code) {
+        return service.getQuestionnaireByCode(code);
     }
 }
