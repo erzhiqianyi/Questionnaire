@@ -21,6 +21,8 @@ public class QuestionnaireResponse {
 
     private String code;
 
+    private String remark;
+
     private List<QuestionResponse> questions;
 
     public QuestionnaireResponse(Questionnaire questionnaire, List<Question> questions, List<Answer> answers) {
@@ -30,6 +32,7 @@ public class QuestionnaireResponse {
         this.id = questionnaire.getId();
         this.code = questionnaire.getCode();
         this.title = questionnaire.getTitle();
+        this.remark = questionnaire.getRemark();
         this.questions = null == questions ? new ArrayList<>() : initQuestion(questions, answers);
     }
 

@@ -8,4 +8,6 @@ public interface QuestionnaireService {
     ResponseResult<Long> createQuestionnaire(QuestionnaireRequest questionnaire);
 
     ResponseResult<QuestionnaireResponse> getQuestionnaireByCode(String code);
+
+    ResponseResult<QuestionnaireResponse> getQuestionnaireById(Long questionnaireId);
 }

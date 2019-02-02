@@ -23,6 +23,10 @@ public class QuestionnaireRequest {
     private String code;
 
     @NotNull
+    @Size(max = 50)
+    private String remark;
+
+    @NotNull
     private List<QuestionRequest> questions;
 
     private List<JudgeLogicRequest> judgeLogic;

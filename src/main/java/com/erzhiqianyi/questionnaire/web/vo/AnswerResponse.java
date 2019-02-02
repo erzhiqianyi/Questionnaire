@@ -15,6 +15,7 @@ public class AnswerResponse {
     private Boolean attach;
     private Integer score;
     private Integer sort;
+    private String attachResult;
 
 
     public AnswerResponse() {

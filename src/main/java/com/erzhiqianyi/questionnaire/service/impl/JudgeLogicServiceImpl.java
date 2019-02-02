@@ -51,4 +51,13 @@ public class JudgeLogicServiceImpl implements JudgeLogicService {
         }
         return Optional.of(judgeLogicResult);
     }
+
+    @Override
+    public Optional<JudgeLogic> getJudgeLogic(Long judgeLogicId) {
+        if (null == judgeLogicId){
+            return Optional.empty();
+        }
+
+        return judgeLogicRepository.findById(judgeLogicId);
+    }
 }

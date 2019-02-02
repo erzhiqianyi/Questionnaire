@@ -21,6 +21,9 @@ public class Questionnaire {
 
     private String code;
 
+    @Column(length = 500)
+    private String remark;
+
 
 
 }

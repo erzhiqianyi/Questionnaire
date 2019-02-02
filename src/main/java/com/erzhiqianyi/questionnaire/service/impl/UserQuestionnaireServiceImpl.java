@@ -12,12 +12,15 @@ import com.erzhiqianyi.questionnaire.web.payload.UserQuestionnaireRequest;
 import com.erzhiqianyi.questionnaire.web.vo.QuestionResponse;
 import com.erzhiqianyi.questionnaire.web.vo.QuestionnaireResponse;
 import com.erzhiqianyi.questionnaire.web.vo.ResponseResult;
+import com.erzhiqianyi.questionnaire.web.vo.UserQuestionnaireResponse;
 import lombok.extern.log4j.Log4j2;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.util.StringUtils;
 
+import java.awt.desktop.UserSessionEvent;
 import java.util.List;
+import java.util.stream.Collector;
 import java.util.stream.Collectors;
 
 @Service
@@ -52,7 +55,7 @@ public class UserQuestionnaireServiceImpl implements UserQuestionnaireService {
         var userAnswer = calculateTotalScore(request.getAnswers(), questionnaire.getResult().getQuestions());
 
         Integer totalScore = userAnswer.stream()
-                .filter(answer-> null != answer.getScore())
+                .filter(answer -> null != answer.getScore())
                 .map(answer -> answer.getScore())
                 .reduce(0, (x, y) -> x + y);
         var judgeLogic = judgeLogicService.judgeScore(totalScore, questionnaire.getResult().getId());
@@ -68,7 +71,27 @@ public class UserQuestionnaireServiceImpl implements UserQuestionnaireService {
         userAnswer.forEach(answer -> answer.setUserQuestionnaireId(userQuestionnaireId));
         userAnswerRepository.saveAll(userAnswer);
 
-        return ResponseResult.success("create user questionnaire success",userQuestionnaireId);
+        return ResponseResult.success("create user questionnaire success", userQuestionnaireId);
+    }
+
+    @Override
+    public ResponseResult<UserQuestionnaireResponse> getUserQuestionnaireById(Long id) {
+        var optional = userQuestionnaireRepository.findById(id);
+        if (!optional.isPresent()) {
+            return ResponseResult.badRequest(" result not exists");
+        }
+        UserQuestionnaire userQuestionnaire = optional.get();
+        var questionnaire = questionnaireService.getQuestionnaireById(userQuestionnaire.getQuestionnaireId());
+        if (!questionnaire.isSuccess()) {
+            return ResponseResult.badRequest(" result not exists");
+        }
+
+        List<UserAnswer> answers = userAnswerRepository.findByUserQuestionnaireId(id);
+        var judgeOptional = judgeLogicService.getJudgeLogic(userQuestionnaire.getJudgeLogicId());
+        var judge = judgeOptional.isPresent() ? judgeOptional.get() : null;
+
+        var userQuestionnaireResponse  = new UserQuestionnaireResponse(questionnaire.getResult(),userQuestionnaire,answers,judge);
+        return ResponseResult.success("获取成功",userQuestionnaireResponse);
     }
 
 
@@ -83,7 +106,7 @@ public class UserQuestionnaireServiceImpl implements UserQuestionnaireService {
                     userAnswer.setAnswerId(answerRequest.getAnswerId());
                     userAnswer.setAttach(answerRequest.getAttach());
                     var question = standQuestionMap.get(answerRequest.getQuestionId());
-                    if (null == question){
+                    if (null == question) {
                         return userAnswer;
                     }
                     var standAnswer = question.getAnswers()

@@ -9,4 +9,7 @@ public interface JudgeLogicService {
     Optional<JudgeLogic> judgeScore(Integer score, Long questionnaireId);
 
     Optional<JudgeLogic> judgeScore(Integer score, List<JudgeLogic> judgeLogics);
+
+    Optional<JudgeLogic> getJudgeLogic(Long judgeLogicId);
+
 }

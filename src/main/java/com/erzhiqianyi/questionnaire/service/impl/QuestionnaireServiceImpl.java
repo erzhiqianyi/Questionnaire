@@ -50,6 +50,7 @@ public class QuestionnaireServiceImpl implements QuestionnaireService {
         Questionnaire questionnaire = new Questionnaire();
         questionnaire.setCode(request.getCode());
         questionnaire.setTitle(request.getTitle());
+        questionnaire.setRemark(request.getRemark());
         questionnaireRepository.save(questionnaire);
         Long questionnaireId = questionnaire.getId();
         if (null == questionnaireId) {
@@ -74,12 +75,28 @@ public class QuestionnaireServiceImpl implements QuestionnaireService {
             return ResponseResult.badRequest("questionnaire not exists");
         }
 
+        return getQuestionnaireResponse(optional.get());
+    }
+
+    @Override
+    public ResponseResult<QuestionnaireResponse> getQuestionnaireById(Long questionnaireId) {
+        if (null == questionnaireId) {
+            return ResponseResult.badRequest("questionnaire not exists");
+        }
+        Optional<Questionnaire> optional = questionnaireRepository.findById(questionnaireId);
+        if (!optional.isPresent()) {
+            return ResponseResult.badRequest("questionnaire not exists");
+        }
+        return getQuestionnaireResponse(optional.get());
+    }
+
+    private ResponseResult<QuestionnaireResponse> getQuestionnaireResponse(Questionnaire questionnaire) {
         var question = new Question();
-        question.setQuestionnaireId(optional.get().getId());
+        question.setQuestionnaireId(questionnaire.getId());
         var questions = questionRepository.findAll(Example.of(question));
         var questionIds = questions.stream().map(Question::getId).collect(Collectors.toList());
         var answers = answerRepository.findByQuestionIdIn(questionIds);
-        var questionnaireResponse = new QuestionnaireResponse(optional.get(),questions,answers);
+        var questionnaireResponse = new QuestionnaireResponse(questionnaire, questions, answers);
         return ResponseResult.success("get success", questionnaireResponse);
     }
 
@@ -108,6 +125,7 @@ public class QuestionnaireServiceImpl implements QuestionnaireService {
         if (null == judgeLogicRequest || null == questionnaireId) {
             return;
         }
+        //todo 逻辑校验，逻辑不能自相矛盾
         var judgeLogics = judgeLogicRequest.stream()
                 .map(request -> {
                     var judgeLogic = new JudgeLogic();
