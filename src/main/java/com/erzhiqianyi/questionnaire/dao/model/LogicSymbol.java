@@ -4,10 +4,10 @@ import org.springframework.util.StringUtils;
 
 public enum LogicSymbol {
     GREATER("GT", "大于"),
-    GREATER_OR_EQUALS("GTE", "大于等于"),
+    GREATER_OR_EQUALS("GTEQ", "大于等于"),
     EQUALS("EQ", "等于"),
     LESS("LT", "小于"),
-    LESS_OR_EQUALS("LTQ", "小于等于"),
+    LESS_OR_EQUALS("LTEQ", "小于等于"),
     BETWEEN("BT", "之间，开区间"),
     BETWEEN_CLOSE("BTC", "之间闭区间");
     private String symbol;
