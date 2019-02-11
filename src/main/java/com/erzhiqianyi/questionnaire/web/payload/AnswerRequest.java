@@ -20,6 +20,9 @@ public class AnswerRequest {
 
     private Integer score;
 
+
+    private Boolean showScore;
+
     private Boolean attach;
 
     @NotNull

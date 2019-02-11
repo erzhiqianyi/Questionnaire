@@ -13,6 +13,7 @@ public class AnswerResponse {
     private Long id;
     private String content;
     private Boolean attach;
+    private Boolean showScore;
     private Integer score;
     private Integer sort;
     private String attachResult;
@@ -26,6 +27,8 @@ public class AnswerResponse {
         this.content = answer.getContent();
         this.attach = answer.getAttach();
         this.score = answer.getScore();
+        this.showScore = answer.getShowScore();
         this.sort = answer.getSort();
+
     }
 }

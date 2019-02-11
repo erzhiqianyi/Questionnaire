@@ -23,9 +23,12 @@ public class Answer {
 
     private Integer score;
 
+    private Boolean showScore;
+
     private Boolean attach;
 
     private Integer sort;
+
 
 
 }
