@@ -39,6 +39,7 @@ public class QuestionnaireControllerTest {
     @Test
     public void createQuestionnaire() throws Exception {
         String data = JsonUtil.toJson(questionnaireRequest);
+
         mockMvc.perform(
                 post("/questionnaire")
                         .contentType(MediaType.APPLICATION_JSON)

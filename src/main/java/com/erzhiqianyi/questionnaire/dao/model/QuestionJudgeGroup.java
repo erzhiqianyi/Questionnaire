@@ -1,34 +1,26 @@
 package com.erzhiqianyi.questionnaire.dao.model;
+
 import lombok.Getter;
 import lombok.Setter;
-import lombok.ToString;
 import org.hibernate.annotations.DynamicUpdate;
 
 import javax.persistence.*;
 
 @Entity
-@Table(name = "judge_logic")
+@Table(name = "question_judge_group")
 @Getter
 @Setter
 @DynamicUpdate
-@ToString
-public class JudgeLogic {
+public class QuestionJudgeGroup {
 
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
     private Long id;
 
-    private Long questionnaireId;
+    private Long questionId;
 
     private Long scoreJudgeGroupId;
 
-    private Integer minScore;
 
-    private Integer maxScore;
-
-    @Enumerated(EnumType.STRING)
-    private LogicSymbol symbol;
-
-    private String message;
 
 }

@@ -20,7 +20,7 @@ public class QuestionnaireController {
     }
 
     @PostMapping
-    public ResponseResult<Long> createQuestionnaire(@RequestBody @Validated QuestionnaireRequest request) {
+    public ResponseResult<Long> createQuestionnaire(@RequestBody  QuestionnaireRequest request) {
         return service.createQuestionnaire(request);
     }
 

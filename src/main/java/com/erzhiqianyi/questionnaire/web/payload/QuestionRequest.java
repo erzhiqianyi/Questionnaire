@@ -44,13 +44,14 @@ public class QuestionRequest {
             throw new IllegalArgumentException("illegal csv data ");
         }
         this.content = arr[0];
-        this.type = QuestionType.codeType(arr[1]);
+        this.type = QuestionType.codeType(arr[1].replace(" " ,""));
         if (null == type){
             throw new IllegalArgumentException("question type can't be null.");
         }
-        this.answerCount = Integer.parseInt(arr[2]);
-        this.required = Required.valueOf(arr[3]);
-        this.sort = Integer.parseInt(arr[4]);
+        this.answerCount = Integer.parseInt(arr[2].replace(" ",""));
+        this.required = Required.valueOf(arr[3].replace(" ",""));
+        this.sort = Integer.parseInt(arr[4].replace(" ",""));
+
 
 
     }

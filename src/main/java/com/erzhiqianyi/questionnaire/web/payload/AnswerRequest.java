@@ -8,6 +8,7 @@ import org.springframework.util.StringUtils;
 import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Size;
+import java.util.TreeMap;
 
 @Getter
 @Setter
@@ -52,6 +53,7 @@ public class AnswerRequest {
         attach = null == attach ? 0 :attach;
         this.attach = attach.intValue() == 1;
         this.sort = Integer.parseInt(arr[3]);
+        this.showScore = false;
 
 
     }
