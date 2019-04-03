@@ -1,27 +1,29 @@
 package com.erzhiqianyi.questionnaire.service.impl;
 
+import com.erzhiqianyi.questionnaire.dao.model.JudgeResult;
 import com.erzhiqianyi.questionnaire.dao.model.UserAnswer;
 import com.erzhiqianyi.questionnaire.dao.model.UserQuestionnaire;
+import com.erzhiqianyi.questionnaire.dao.repository.JudgeResultRepository;
 import com.erzhiqianyi.questionnaire.dao.repository.UserAnswerRepository;
 import com.erzhiqianyi.questionnaire.dao.repository.UserQuestionnaireRepository;
+import com.erzhiqianyi.questionnaire.dto.QuestionGroupDto;
 import com.erzhiqianyi.questionnaire.service.JudgeLogicService;
 import com.erzhiqianyi.questionnaire.service.QuestionnaireService;
 import com.erzhiqianyi.questionnaire.service.UserQuestionnaireService;
 import com.erzhiqianyi.questionnaire.web.payload.UserAnswerRequest;
 import com.erzhiqianyi.questionnaire.web.payload.UserQuestionnaireRequest;
-import com.erzhiqianyi.questionnaire.web.vo.QuestionResponse;
-import com.erzhiqianyi.questionnaire.web.vo.QuestionnaireResponse;
-import com.erzhiqianyi.questionnaire.web.vo.ResponseResult;
-import com.erzhiqianyi.questionnaire.web.vo.UserQuestionnaireResponse;
+import com.erzhiqianyi.questionnaire.web.vo.*;
 import lombok.extern.log4j.Log4j2;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.util.StringUtils;
 
-import java.awt.desktop.UserSessionEvent;
 import java.util.List;
-import java.util.stream.Collector;
 import java.util.stream.Collectors;
+import java.util.stream.Stream;
+
+import static java.util.stream.Collectors.groupingBy;
+import static java.util.stream.Collectors.summingInt;
 
 @Service
 @Log4j2
@@ -39,6 +41,9 @@ public class UserQuestionnaireServiceImpl implements UserQuestionnaireService {
     @Autowired
     private UserAnswerRepository userAnswerRepository;
 
+    @Autowired
+    private JudgeResultRepository judgeResultRepository;
+
     @Override
     public ResponseResult<Long> createUserQuestionnaire(UserQuestionnaireRequest request) {
         ResponseResult<QuestionnaireResponse> questionnaire = questionnaireService
@@ -52,26 +57,51 @@ public class UserQuestionnaireServiceImpl implements UserQuestionnaireService {
 
         Long questionnaireId = questionnaire.getResult().getId();
         checkUserAnswer(request.getAnswers(), questionnaire.getResult().getQuestions());
-        var userAnswer = calculateTotalScore(request.getAnswers(), questionnaire.getResult().getQuestions());
 
-        Integer totalScore = userAnswer.stream()
-                .filter(answer -> null != answer.getScore())
-                .map(answer -> answer.getScore())
-                .reduce(0, (x, y) -> x + y);
-        var judgeLogic = judgeLogicService.judgeScore(totalScore, questionnaire.getResult().getId());
+        var userAnswer = createUserAnswer(request.getAnswers(), questionnaire.getResult().getQuestions());
+
+        var questionGroups = questionnaireService.getQuestionnaireQuestionGroup(questionnaireId);
+        var questionGroupMap = questionGroups.stream().collect(Collectors.toMap(group -> group.getCode(), group -> group));
+        var questionDetailGroupMap = questionGroups
+                .stream()
+                .flatMap(group -> group.getQuestions().stream().map(id -> {
+                    var singleGroup = new QuestionGroupDto();
+                    singleGroup.setCode(group.getCode());
+                    singleGroup.setQuestions(Stream.of(id).collect(Collectors.toList()));
+                    return singleGroup;
+                })).collect(
+                        Collectors.toMap(group -> group.getQuestions().stream().findFirst().get(),
+                                group -> group.getCode()));
+
+        var judgeLogicList = userAnswer.stream().collect(
+                groupingBy(answer -> questionDetailGroupMap.get(answer.getQuestionId()), summingInt(UserAnswer::getScore))
+        ).entrySet().stream().map(entry -> {
+            var result = new JudgeResult();
+            var group = questionGroupMap.get(entry.getKey());
+            result.setGroupCode(entry.getKey());
+            result.setScore(entry.getValue());
+            result.setGroupName(group.getName());
+            result.setQuestionGroupId(group.getId());
+            var judgeLogic = judgeLogicService.judgeScore(entry.getValue(), questionnaire.getResult().getId(), entry.getKey());
+            judgeLogic.ifPresent(logic -> {
+                result.setJudgeLogicId(logic.getId());
+            });
+            return result;
+        }).collect(Collectors.toList());
+
         var userQuestionnaire = new UserQuestionnaire();
-
-        userQuestionnaire.setJudgeLogicId(judgeLogic.isPresent() ? judgeLogic.get().getId() : null);
         userQuestionnaire.setQuestionnaireId(questionnaireId);
-        userQuestionnaire.setTotalScore(totalScore);
         userQuestionnaire.setUserId(request.getUserId());
 
         userQuestionnaireRepository.save(userQuestionnaire);
         var userQuestionnaireId = userQuestionnaire.getId();
         userAnswer.forEach(answer -> answer.setUserQuestionnaireId(userQuestionnaireId));
         userAnswerRepository.saveAll(userAnswer);
+        judgeResultRepository.saveAll(judgeLogicList);
+
 
         return ResponseResult.success("create user questionnaire success", userQuestionnaireId);
+
     }
 
     @Override
@@ -90,13 +120,13 @@ public class UserQuestionnaireServiceImpl implements UserQuestionnaireService {
         var judgeOptional = judgeLogicService.getJudgeLogic(userQuestionnaire.getJudgeLogicId());
         var judge = judgeOptional.isPresent() ? judgeOptional.get() : null;
 
-        var userQuestionnaireResponse  = new UserQuestionnaireResponse(questionnaire.getResult(),userQuestionnaire,answers,judge);
-        return ResponseResult.success("获取成功",userQuestionnaireResponse);
+        var userQuestionnaireResponse = new UserQuestionnaireResponse(questionnaire.getResult(), userQuestionnaire, answers, judge);
+        return ResponseResult.success("获取成功", userQuestionnaireResponse);
     }
 
 
-    private List<UserAnswer> calculateTotalScore(List<UserAnswerRequest> request, List<QuestionResponse> quesions) {
-        var standQuestionMap = quesions
+    private List<UserAnswer> createUserAnswer(List<UserAnswerRequest> request, List<QuestionResponse> questions) {
+        var standQuestionMap = questions
                 .stream().collect(Collectors.toMap(question -> question.getId(), question -> question));
         var userAnswers = request
                 .stream()
@@ -125,7 +155,7 @@ public class UserQuestionnaireServiceImpl implements UserQuestionnaireService {
 
     private void checkUserAnswer(List<UserAnswerRequest> request, List<QuestionResponse> questions) {
         var userAnswerMap = request.stream()
-                .collect(Collectors.groupingBy(UserAnswerRequest::getQuestionId));
+                .collect(groupingBy(UserAnswerRequest::getQuestionId));
 
         var standQuestionMap = questions.stream()
                 .collect(Collectors.toMap(question -> question.getId(), question -> question));
@@ -170,6 +200,7 @@ public class UserQuestionnaireServiceImpl implements UserQuestionnaireService {
                 throw new IllegalArgumentException("question " + key + "not exists.");
             }
         });
-
     }
+
+
 }

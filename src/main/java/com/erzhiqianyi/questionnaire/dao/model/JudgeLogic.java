@@ -20,7 +20,7 @@ public class JudgeLogic {
 
     private Long questionnaireId;
 
-    private Long questionGroupId;
+    private String  questionGroupCode ;
 
     private Integer minScore;
 

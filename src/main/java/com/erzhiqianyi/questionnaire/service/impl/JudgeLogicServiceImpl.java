@@ -6,6 +6,7 @@ import com.erzhiqianyi.questionnaire.dao.repository.JudgeLogicRepository;
 import com.erzhiqianyi.questionnaire.service.JudgeLogicService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.util.StringUtils;
 
 import java.util.List;
 import java.util.Optional;
@@ -17,14 +18,19 @@ public class JudgeLogicServiceImpl implements JudgeLogicService {
     private JudgeLogicRepository judgeLogicRepository;
 
     @Override
-    public Optional<JudgeLogic> judgeScore(Integer score, Long questionnaireId) {
+    public Optional<JudgeLogic> judgeScore(Integer score, Long questionnaireId, String questionGroup) {
         if (null == score) {
             return Optional.empty();
         }
         if (null == questionnaireId) {
             return Optional.empty();
         }
-        List<JudgeLogic> judgeLogics = judgeLogicRepository.findByQuestionnaireId(questionnaireId);
+        List<JudgeLogic> judgeLogics;
+        if (!StringUtils.isEmpty(questionGroup)) {
+            judgeLogics = judgeLogicRepository.findByQuestionnaireIdAndQuestionGroupCode(questionnaireId,questionGroup.toUpperCase());
+        } else {
+            judgeLogics = judgeLogicRepository.findByQuestionnaireId(questionnaireId);
+        }
         if (null == judgeLogics || judgeLogics.isEmpty()) {
             return Optional.empty();
         }
@@ -34,17 +40,17 @@ public class JudgeLogicServiceImpl implements JudgeLogicService {
     @Override
     public Optional<JudgeLogic> judgeScore(Integer score, List<JudgeLogic> judgeLogics) {
         JudgeLogic judgeLogicResult = null;
-        for (JudgeLogic judgeLogic : judgeLogics ){
-            boolean isInLogic  = LogicSymbol.judgeLogic(judgeLogic,score);
-            if (isInLogic){
-                if (null == judgeLogicResult){
+        for (JudgeLogic judgeLogic : judgeLogics) {
+            boolean isInLogic = LogicSymbol.judgeLogic(judgeLogic, score);
+            if (isInLogic) {
+                if (null == judgeLogicResult) {
                     judgeLogicResult = judgeLogic;
-                }else {
-                   judgeLogicResult = LogicSymbol.judgeBetter(judgeLogic,judgeLogicResult,score);
+                } else {
+                    judgeLogicResult = LogicSymbol.judgeBetter(judgeLogic, judgeLogicResult, score);
                 }
             }
         }
-        if (null == judgeLogicResult){
+        if (null == judgeLogicResult) {
             judgeLogicResult = new JudgeLogic();
             judgeLogicResult.setMessage(LogicSymbol.NO_RESULT);
             return Optional.of(judgeLogicResult);
@@ -54,7 +60,7 @@ public class JudgeLogicServiceImpl implements JudgeLogicService {
 
     @Override
     public Optional<JudgeLogic> getJudgeLogic(Long judgeLogicId) {
-        if (null == judgeLogicId){
+        if (null == judgeLogicId) {
             return Optional.empty();
         }
 

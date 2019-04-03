@@ -1,9 +1,11 @@
 package com.erzhiqianyi.questionnaire.web.controller;
 
 import com.erzhiqianyi.questionnaire.QuestionnaireApplication;
-import com.erzhiqianyi.questionnaire.dao.model.UserQuestionnaire;
-import com.erzhiqianyi.questionnaire.dao.repository.UserQuestionnaireRepository;
+import com.erzhiqianyi.questionnaire.dao.model.Questionnaire;
+import com.erzhiqianyi.questionnaire.dao.repository.QuestionnaireRepository;
+import com.erzhiqianyi.questionnaire.service.QuestionnaireService;
 import com.erzhiqianyi.questionnaire.util.JsonUtil;
+import com.erzhiqianyi.questionnaire.web.payload.UserAnswerRequest;
 import com.erzhiqianyi.questionnaire.web.payload.UserQuestionnaireRequest;
 import org.junit.Before;
 import org.junit.Test;
@@ -15,7 +17,10 @@ import org.springframework.http.MediaType;
 import org.springframework.test.context.junit4.SpringRunner;
 import org.springframework.test.web.servlet.MockMvc;
 
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
+import java.util.stream.Collectors;
+
+import static junit.framework.TestCase.assertNotNull;
+import static junit.framework.TestCase.assertTrue;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
@@ -31,24 +36,41 @@ public class UserQuestionnaireControllerTest {
     private MockMvc mockMvc;
 
     @Autowired
-    private UserQuestionnaireRepository repository;
+    private QuestionnaireRepository questionnaireRepository;
 
     private UserQuestionnaireRequest userQuestionnaireRequest;
 
     private Long questionnaireId;
 
+    @Autowired
+    private QuestionnaireService questionnaireService;
 
     @Before
     public void init() {
-        DataTest dataTest = new DataTest();
-        this.userQuestionnaireRequest = dataTest.getUserQuestionnaireRequest();
-        questionnaireId = repository.findAll().stream().map(UserQuestionnaire::getId).findAny().get();
-
+        questionnaireId = questionnaireRepository.findAll().stream().map(Questionnaire::getId).findAny().get();
+        var questionResponse = questionnaireService.getQuestionnaireById(questionnaireId);
+        assertNotNull(questionResponse);
+        assertTrue(questionResponse.isSuccess());
+        var questionnaire = questionResponse.getResult();
+        userQuestionnaireRequest = new UserQuestionnaireRequest();
+        userQuestionnaireRequest.setCode(questionnaire.getCode());
+        userQuestionnaireRequest.setUserId("1234");
+        var userAnswers = questionnaire.getQuestions()
+                .stream()
+                .map(question -> {
+                    var userAnswer = new UserAnswerRequest();
+                    userAnswer.setQuestionId(question.getId());
+                    userAnswer.setAnswerId(question.getAnswers().stream().findAny().get().getId());
+                    return userAnswer;
+                })
+                .collect(Collectors.toList());
+        userQuestionnaireRequest.setAnswers(userAnswers);
     }
 
     @Test
     public void createUserQuestionnaire() throws Exception {
         String data = JsonUtil.toJson(userQuestionnaireRequest);
+        System.out.println(data);
         mockMvc.perform(
                 post("/user/questionnaire")
                         .contentType(MediaType.APPLICATION_JSON)
@@ -60,17 +82,4 @@ public class UserQuestionnaireControllerTest {
     }
 
 
-    @Test
-    public void getUserQuestionnaireResult() throws Exception {
-        mockMvc.perform(
-                get("/user/questionnaire/"+questionnaireId)
-                        .contentType(MediaType.APPLICATION_JSON))
-                .andDo(print())
-                .andExpect(status().isOk())
-                .andExpect(jsonPath("code").value("200"))
-                .andExpect(jsonPath("result.id").value(questionnaireId))
-        ;
-
-
-    }
 }

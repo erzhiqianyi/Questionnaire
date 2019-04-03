@@ -11,4 +11,9 @@ public class QuestionGroupRequest {
     private String remark;
     private List<QuestionGroupDetailRequest> questions;
 
+    public QuestionGroupRequest(String name, String code, String remark) {
+        this.name = name;
+        this.code = code.toUpperCase();
+        this.remark = remark;
+    }
 }

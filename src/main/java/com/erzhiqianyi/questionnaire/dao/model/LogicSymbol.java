@@ -9,11 +9,13 @@ public enum LogicSymbol {
     LESS("LT", "小于"),
     LESS_OR_EQUALS("LTEQ", "小于等于"),
     BETWEEN("BT", "之间，开区间"),
-    BETWEEN_CLOSE("BTC", "之间闭区间");
+    BETWEEN_CLOSE("BTC", "之间闭区间"),
+    BETEEN_R_CLOSE("BTRC", "左开右闭");
     private String symbol;
     private String remark;
 
-    public static final String NO_RESULT = "没有结果" ;
+    public static final String NO_RESULT = "没有结果";
+
     LogicSymbol(String symbol, String remark) {
         this.symbol = symbol;
         this.remark = remark;
@@ -33,9 +35,9 @@ public enum LogicSymbol {
         Integer maxScore = judgeLogic.getMaxScore();
         switch (logic) {
             case LESS:
-                return  score < minScore ;
+                return score < minScore;
             case LESS_OR_EQUALS:
-                return  score <= minScore ;
+                return score <= minScore;
             case EQUALS:
                 var minEqual = false;
                 var maxEqual = false;
@@ -47,9 +49,9 @@ public enum LogicSymbol {
                 }
                 return minEqual || maxEqual;
             case GREATER_OR_EQUALS:
-                return  score >= maxScore ;
+                return score >= maxScore;
             case GREATER:
-                return  score > maxScore ;
+                return score > maxScore;
             case BETWEEN:
                 if (null == minScore || null == maxScore) {
                     return false;
@@ -149,6 +151,7 @@ public enum LogicSymbol {
                         return another;
                     case BETWEEN:
                     case BETWEEN_CLOSE:
+                    case BETEEN_R_CLOSE:
                         if (oneMinScore >= anotherMinScore && oneMaxScore <= anotherMaxScore) {
                             return one;
                         } else {
@@ -208,6 +211,12 @@ public enum LogicSymbol {
                 }
             case BETWEEN_CLOSE:
                 if (oneMinScore >= anotherMinScore && oneMaxScore <= anotherMaxScore) {
+                    return one;
+                } else {
+                    return another;
+                }
+            case BETEEN_R_CLOSE:
+                if (oneMinScore > anotherMinScore && oneMaxScore <= anotherMaxScore) {
                     return one;
                 } else {
                     return another;
