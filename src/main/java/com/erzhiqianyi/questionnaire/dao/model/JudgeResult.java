@@ -17,7 +17,7 @@ public class JudgeResult {
     @GeneratedValue(strategy = GenerationType.AUTO)
     private Long id;
 
-    private Long scoreJudgeGroupId;
+    private Long questionGroupId;
 
     private String groupCode;
 
@@ -28,5 +28,9 @@ public class JudgeResult {
     private Integer percent;
 
     private Integer status;
+
+    private String remark;
+
+    private Long judgeLogicId;
 
 }

@@ -31,4 +31,7 @@ public class QuestionnaireRequest {
 
     private List<JudgeLogicRequest> judgeLogic;
 
+    private List<QuestionGroupRequest> judgeGroup;
+
+
 }

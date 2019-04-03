@@ -11,11 +11,13 @@ import javax.persistence.*;
 @Getter
 @Setter
 @DynamicUpdate
-public class ScoreJudgeGroup {
+public class QuestionGroup {
 
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
     private Long id;
+
+    private Long questionnaireId;
 
     private String code;
 

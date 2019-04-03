@@ -7,11 +7,12 @@ import org.hibernate.annotations.DynamicUpdate;
 import javax.persistence.*;
 
 @Entity
-@Table(name = "question_judge_group")
+@Table(name = "question_group_detail")
 @Getter
 @Setter
 @DynamicUpdate
-public class QuestionJudgeGroup {
+public class QuestionGroupDetail {
+
 
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
@@ -19,7 +20,7 @@ public class QuestionJudgeGroup {
 
     private Long questionId;
 
-    private Long scoreJudgeGroupId;
+    private Long questionGroupId;
 
 
 

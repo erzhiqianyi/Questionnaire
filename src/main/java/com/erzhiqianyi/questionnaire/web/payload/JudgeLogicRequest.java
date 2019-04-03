@@ -23,4 +23,5 @@ public class JudgeLogicRequest {
    @Size(max = 1000)
    private String message;
 
+   private String questionGroupCode;
 }
