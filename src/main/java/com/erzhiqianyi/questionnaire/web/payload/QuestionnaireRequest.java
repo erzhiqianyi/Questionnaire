@@ -1,5 +1,6 @@
 package com.erzhiqianyi.questionnaire.web.payload;
 
+import com.erzhiqianyi.questionnaire.dao.model.AnswerGroup;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.ToString;
@@ -33,5 +34,5 @@ public class QuestionnaireRequest {
 
     private List<QuestionGroupRequest> questionGroup;
 
-
+    private List<AnswerGroupRequest> answerGroup;
 }

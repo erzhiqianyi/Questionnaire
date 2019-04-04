@@ -47,7 +47,10 @@ public class UserQuestionnaireControllerTest {
 
     @Before
     public void init() {
-        questionnaireId = questionnaireRepository.findAll().stream().map(Questionnaire::getId).findAny().get();
+        questionnaireId = questionnaireRepository.findAll().stream()
+                .map(Questionnaire::getId)
+
+                .findAny().get();
         var questionResponse = questionnaireService.getQuestionnaireById(questionnaireId);
         assertNotNull(questionResponse);
         assertTrue(questionResponse.isSuccess());

@@ -1,5 +1,6 @@
 package com.erzhiqianyi.questionnaire.service;
 
+import com.erzhiqianyi.questionnaire.dto.AnswerGroupDto;
 import com.erzhiqianyi.questionnaire.dto.QuestionGroupDto;
 import com.erzhiqianyi.questionnaire.web.payload.QuestionnaireRequest;
 import com.erzhiqianyi.questionnaire.web.vo.QuestionnaireResponse;
@@ -16,4 +17,5 @@ public interface QuestionnaireService {
 
     List<QuestionGroupDto> getQuestionnaireQuestionGroup(Long questionnaireId);
 
+    List<AnswerGroupDto> getQuestionnaireAnswerGroup(Long questionnaireId);
 }

@@ -26,14 +26,17 @@ public class JudgeLogicRequest {
 
     private String questionGroupCode;
 
+    private String questionGroupName;
+
     public JudgeLogicRequest() {
     }
 
-    public JudgeLogicRequest(String[] item) {
+    public JudgeLogicRequest(String[] item,String questionGroupName) {
         if (null == item || item.length != 5) {
             throw new IllegalArgumentException(" illegal csv data");
         }
         this.questionGroupCode = item[0].replace(" ", "").toUpperCase();
+        this.questionGroupName = questionGroupName;
         this.symbol = LogicSymbol.symbol(item[1].replace(" ", ""));
         this.message = item[2];
         if (!StringUtils.isEmpty(item[3])) {

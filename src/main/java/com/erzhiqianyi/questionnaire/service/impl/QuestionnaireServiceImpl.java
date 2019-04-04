@@ -2,12 +2,10 @@ package com.erzhiqianyi.questionnaire.service.impl;
 
 import com.erzhiqianyi.questionnaire.dao.model.*;
 import com.erzhiqianyi.questionnaire.dao.repository.*;
+import com.erzhiqianyi.questionnaire.dto.AnswerGroupDto;
 import com.erzhiqianyi.questionnaire.dto.QuestionGroupDto;
 import com.erzhiqianyi.questionnaire.service.QuestionnaireService;
-import com.erzhiqianyi.questionnaire.web.payload.JudgeLogicRequest;
-import com.erzhiqianyi.questionnaire.web.payload.QuestionGroupRequest;
-import com.erzhiqianyi.questionnaire.web.payload.QuestionRequest;
-import com.erzhiqianyi.questionnaire.web.payload.QuestionnaireRequest;
+import com.erzhiqianyi.questionnaire.web.payload.*;
 import com.erzhiqianyi.questionnaire.web.vo.QuestionnaireResponse;
 import com.erzhiqianyi.questionnaire.web.vo.ResponseResult;
 import org.springframework.beans.BeanUtils;
@@ -43,6 +41,12 @@ public class QuestionnaireServiceImpl implements QuestionnaireService {
     @Autowired
     private QuestionGroupDetailRepository questionGroupDetailRepository;
 
+    @Autowired
+    private AnswerGroupLogicRepository answerGroupLogicRepository;
+
+    @Autowired
+    private AnswerGroupRepository answerGroupRepository;
+
     @Override
     public ResponseResult<Long> createQuestionnaire(QuestionnaireRequest request) {
         Optional<Questionnaire> optionalQuestionnaire = questionnaireRepository.findByCodeOrTitle(request.getCode(), request.getTitle());
@@ -66,7 +70,42 @@ public class QuestionnaireServiceImpl implements QuestionnaireService {
 
         saveJudgeLogic(request.getJudgeLogic(), questionnaireId);
 
+        saveAnswerGroup(request.getAnswerGroup(), questionnaireId);
+
         return ResponseResult.success("create questionnaire  success", questionnaireId);
+    }
+
+    private void saveAnswerGroup(List<AnswerGroupRequest> answerGroupRequest, Long questionnaireId) {
+        if (null == answerGroupRequest || null == questionnaireId) {
+            return;
+        }
+        var groups = answerGroupRequest.stream()
+                .map(request -> {
+                            var group = new AnswerGroup();
+                            group.setCode(request.getCode());
+                            group.setName(request.getName());
+                            group.setQuestionnaireId(questionnaireId);
+                            group.setCollectMethod(request.getCollectMethod());
+                            group.setRemark(request.getRemark());
+                            return group;
+                        }
+                ).collect(Collectors.toList());
+        answerGroupRepository.saveAll(groups);
+
+        var groupLogic = answerGroupRequest.stream()
+                .filter(request -> null != request.getGroupLogic())
+                .flatMap(request -> request.getGroupLogic().stream())
+                .map(logicRequest -> {
+                    var logic = new AnswerGroupLogic();
+                    logic.setAnswerGroupCode(logicRequest.getAnswerGroupCode());
+                    logic.setSymbol(logicRequest.getSymbol());
+                    logic.setQuestionnaireId(questionnaireId);
+                    logic.setMaxScore(logicRequest.getMaxScore());
+                    logic.setMinScore(logicRequest.getMinScore());
+                    logic.setRemark(logicRequest.getRemark());
+                    return logic;
+                }).collect(Collectors.toList());
+        answerGroupLogicRepository.saveAll(groupLogic);
     }
 
     private void saveQuestionGroup(List<QuestionGroupRequest> questionGroup, Long questionnaireId) {
@@ -147,6 +186,24 @@ public class QuestionnaireServiceImpl implements QuestionnaireService {
             return groupDto;
         }).collect(Collectors.toList());
 
+    }
+
+    @Override
+    public List<AnswerGroupDto> getQuestionnaireAnswerGroup(Long questionnaireId) {
+        if (null == questionnaireId) {
+            return Collections.emptyList();
+        }
+        List<AnswerGroup> groups = answerGroupRepository.findByQuestionnaireId(questionnaireId);
+        List<AnswerGroupLogic> groupLogic = answerGroupLogicRepository.findByQuestionnaireId(questionnaireId);
+        if (null == groups && null == groupLogic) {
+            return Collections.emptyList();
+        }
+
+        var logicMap = groupLogic.stream().collect(Collectors.groupingBy(AnswerGroupLogic::getAnswerGroupCode));
+        var groupDto = groups.stream()
+                .map(group -> new AnswerGroupDto(group,logicMap.get(group.getCode())))
+                .collect(Collectors.toList());
+        return groupDto;
     }
 
     private ResponseResult<QuestionnaireResponse> getQuestionnaireResponse(Questionnaire questionnaire) {

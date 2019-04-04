@@ -62,7 +62,11 @@ public enum LogicSymbol {
                     return false;
                 }
                 return score >= minScore && score <= maxScore;
-
+            case BETEEN_R_CLOSE:
+                if (null == minScore || null == maxScore) {
+                    return false;
+                }
+                return score > minScore && score <= maxScore;
         }
         return false;
 

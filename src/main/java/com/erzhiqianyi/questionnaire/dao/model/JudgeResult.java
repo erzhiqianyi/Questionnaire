@@ -29,8 +29,12 @@ public class JudgeResult {
 
     private Integer status;
 
-    private String remark;
+    @Column(length = 1000)
+    private String suggestion;
 
     private Long judgeLogicId;
+
+    private Long userQuestionnaireId;
+
 
 }
