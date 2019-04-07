@@ -1,7 +1,7 @@
 package com.erzhiqianyi.questionnaire.dto;
 
 import com.erzhiqianyi.questionnaire.dao.model.AnswerGroupLogic;
-import com.erzhiqianyi.questionnaire.dao.model.LogicSymbol;
+import com.erzhiqianyi.questionnaire.service.bo.LogicSymbol;
 import lombok.Data;
 
 @Data

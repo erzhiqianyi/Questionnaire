@@ -1,81 +1,156 @@
-package com.erzhiqianyi.questionnaire.dao.model;
+package com.erzhiqianyi.questionnaire.service.bo;
 
+import com.erzhiqianyi.questionnaire.dao.model.JudgeLogic;
 import org.springframework.util.StringUtils;
 
-public enum LogicSymbol {
-    GREATER("GT", "大于"),
-    GREATER_OR_EQUALS("GTEQ", "大于等于"),
-    EQUALS("EQ", "等于"),
-    LESS("LT", "小于"),
-    LESS_OR_EQUALS("LTEQ", "小于等于"),
-    BETWEEN("BT", "之间，开区间"),
-    BETWEEN_CLOSE("BTC", "之间闭区间"),
-    BETEEN_R_CLOSE("BTRC", "左开右闭");
+import java.util.List;
+import java.util.Optional;
+
+public enum LogicSymbol implements CheckJudgeInfo {
+    GREATER("GT", "大于") {
+        @Override
+        public boolean checkJudgeInfo(JudgeInfo judgeInfo) {
+            return null != judgeInfo &&
+                    null != judgeInfo.getMaxScore() &&
+                    null == judgeInfo.getMinScore();
+        }
+    },
+    GREATER_OR_EQUALS("GTEQ", "大于等于") {
+        @Override
+        public boolean checkJudgeInfo(JudgeInfo judgeInfo) {
+            return null != judgeInfo && null != judgeInfo.getMaxScore() && null == judgeInfo.getMinScore();
+        }
+    },
+    EQUALS("EQ", "等于") {
+        @Override
+        public boolean checkJudgeInfo(JudgeInfo judgeInfo) {
+            Double max = judgeInfo.getMaxScore();
+            Double min = judgeInfo.getMinScore();
+            return null != judgeInfo &&
+                    (null != max && null != min ?
+                            Double.compare(max, min) == 0 :
+                            null != max || null != min);
+        }
+    },
+    LESS("LT", "小于") {
+        @Override
+        public boolean checkJudgeInfo(JudgeInfo judgeInfo) {
+            return null != judgeInfo && null != judgeInfo.getMinScore() && null == judgeInfo.getMaxScore();
+        }
+    },
+    LESS_OR_EQUALS("LTEQ", "小于等于") {
+        @Override
+        public boolean checkJudgeInfo(JudgeInfo judgeInfo) {
+            return null != judgeInfo && null != judgeInfo.getMinScore() && null == judgeInfo.getMaxScore();
+        }
+    },
+    BETWEEN("BT", "之间，开区间") {
+        @Override
+        public boolean checkJudgeInfo(JudgeInfo judgeInfo) {
+            return null != judgeInfo &&
+                    null != judgeInfo.getMaxScore() &&
+                    null != judgeInfo.getMinScore() &&
+                    Double.compare(judgeInfo.getMaxScore(), judgeInfo.getMinScore()) == 1;
+        }
+    },
+    BETWEEN_CLOSE("BTC", "之间闭区间") {
+        @Override
+        public boolean checkJudgeInfo(JudgeInfo judgeInfo) {
+            return null != judgeInfo &&
+                    null != judgeInfo.getMaxScore() &&
+                    null != judgeInfo.getMinScore() &&
+                    Double.compare(judgeInfo.getMaxScore(), judgeInfo.getMinScore()) == 1;
+        }
+    },
+    BETWEEN_R_CLOSE("BTRC", "左开右闭") {
+        @Override
+        public boolean checkJudgeInfo(JudgeInfo judgeInfo) {
+            return null != judgeInfo &&
+                    null != judgeInfo.getMaxScore() &&
+                    null != judgeInfo.getMinScore() &&
+                    Double.compare(judgeInfo.getMaxScore(), judgeInfo.getMinScore()) == 1;
+        }
+    },
+    BETWEEN_L_CLOSE("BTLC", "左闭右开") {
+        @Override
+        public boolean checkJudgeInfo(JudgeInfo judgeInfo) {
+            return null != judgeInfo &&
+                    null != judgeInfo.getMaxScore() &&
+                    null != judgeInfo.getMinScore() &&
+                    Double.compare(judgeInfo.getMaxScore(), judgeInfo.getMinScore()) == 1;
+        }
+    },
+
+    ;
     private String symbol;
     private String remark;
 
     public static final String NO_RESULT = "没有结果";
+
 
     LogicSymbol(String symbol, String remark) {
         this.symbol = symbol;
         this.remark = remark;
     }
 
-    public static boolean judgeLogic(JudgeLogic judgeLogic, Integer score) {
-        if (null == judgeLogic) {
+    public static boolean judgeInfo(JudgeInfo judgeInfo, Double score) {
+        if (null == judgeInfo) {
             return false;
         }
 
         if (null == score) {
             return false;
         }
-        LogicSymbol logic = judgeLogic.getSymbol();
 
-        Double minScore = judgeLogic.getMinScore();
-        Double maxScore = judgeLogic.getMaxScore();
-        int scoreCompareMinScore = Double.compare(score, minScore);
-        int scoreComapreMaxScore = Double.compare(score, maxScore);
+        LogicSymbol logic = judgeInfo.getSymbol();
+        if (null == logic) {
+            return false;
+        }
+
+        if (!logic.checkJudgeInfo(judgeInfo)) {
+            return false;
+        }
+
+        Double minScore = judgeInfo.getMinScore();
+        Double maxScore = judgeInfo.getMaxScore();
+
+        int compareMin = null != minScore ? Double.compare(score, minScore) : -1;
+        int compareMax = null != maxScore ? Double.compare(score, maxScore) : -1;
         switch (logic) {
             case LESS:
-                return scoreCompareMinScore == -1;
+                return compareMin == -1;
             case LESS_OR_EQUALS:
-                return scoreCompareMinScore == -1 || score == 0;
+                return compareMin == -1 || compareMin == 0;
             case EQUALS:
                 var minEqual = false;
                 var maxEqual = false;
                 if (null != minScore) {
-                    minEqual = scoreCompareMinScore == 0;
+                    minEqual = compareMin == 0;
                 }
                 if (null != maxScore) {
-                    maxEqual = scoreComapreMaxScore == 0;
+                    maxEqual = compareMax == 0;
                 }
                 return minEqual || maxEqual;
             case GREATER_OR_EQUALS:
-                return scoreComapreMaxScore == 1 || scoreComapreMaxScore == 0;
+                return compareMax == 1 || compareMax == 0;
             case GREATER:
-                return scoreComapreMaxScore == 1;
+                return compareMax == 1;
             case BETWEEN:
-                if (null == minScore || null == maxScore) {
-                    return false;
-                }
-                return scoreCompareMinScore == 1 && scoreComapreMaxScore == -1;
+               return compareMin == 1 && compareMax == -1;
             case BETWEEN_CLOSE:
-                if (null == minScore || null == maxScore) {
-                    return false;
-                }
-                return (scoreCompareMinScore == 1 || scoreComapreMaxScore == 0)
-                        && (scoreComapreMaxScore == -1 || scoreComapreMaxScore == 0);
-            case BETEEN_R_CLOSE:
-                if (null == minScore || null == maxScore) {
-                    return false;
-                }
-                return scoreCompareMinScore == 1 && (scoreComapreMaxScore == -1 || scoreComapreMaxScore == 0);
+               return (compareMin == 1 || compareMin == 0)
+                        && (compareMax == -1 || compareMax == 0);
+            case BETWEEN_R_CLOSE:
+               return compareMin == 1 && (compareMax == -1 || compareMax == 0);
+            case BETWEEN_L_CLOSE:
+               return (compareMin == 1 || compareMin == 0 ) && (compareMax == -1 );
+
         }
         return false;
 
     }
 
-    public static JudgeLogic judgeBetter(JudgeLogic one, JudgeLogic another) {
+    public static JudgeInfo judgeBetter(JudgeInfo one, JudgeInfo another) {
         if (null == one && null == another) {
             return null;
         }
@@ -94,7 +169,7 @@ public enum LogicSymbol {
         }
     }
 
-    private static JudgeLogic judgeBetterNotSame(JudgeLogic one, JudgeLogic another) {
+    private static JudgeInfo judgeBetterNotSame(JudgeInfo one, JudgeInfo another) {
         Double oneMinScore = one.getMinScore();
         Double anotherMinScore = another.getMinScore();
         Double oneMaxScore = one.getMaxScore();
@@ -140,7 +215,7 @@ public enum LogicSymbol {
                         }
                     case BETWEEN:
                     case BETWEEN_CLOSE:
-                    case BETEEN_R_CLOSE:
+                    case BETWEEN_R_CLOSE:
                         if (oneMaxComapreAnother == 1 || oneMaxComapreAnother == 0) {
                             return one;
                         } else {
@@ -161,7 +236,7 @@ public enum LogicSymbol {
                         return another;
                     case BETWEEN:
                     case BETWEEN_CLOSE:
-                    case BETEEN_R_CLOSE:
+                    case BETWEEN_R_CLOSE:
                         if ((oneMinCompareAnother == 0 || oneMaxComapreAnother == 1) &&
                                 (oneMaxComapreAnother == -1 || oneMaxComapreAnother == 0)) {
                             return one;
@@ -181,7 +256,7 @@ public enum LogicSymbol {
 
     }
 
-    private static JudgeLogic judgeBetterBySame(JudgeLogic one, JudgeLogic another) {
+    private static JudgeInfo judgeBetterBySame(JudgeInfo one, JudgeInfo another) {
         Double oneMinScore = one.getMinScore();
         Double anotherMinScore = another.getMinScore();
         Double oneMaxScore = one.getMaxScore();
@@ -228,7 +303,7 @@ public enum LogicSymbol {
                 } else {
                     return another;
                 }
-            case BETEEN_R_CLOSE:
+            case BETWEEN_R_CLOSE:
                 if (oneMinCompareAnother == 1 && oneMaxComapareAnother == 1 || oneMaxComapareAnother == 0) {
                     return one;
                 } else {
@@ -258,4 +333,24 @@ public enum LogicSymbol {
         }
         return null;
     }
+
+    public Optional<JudgeInfo> judgeScore(Double score, List<JudgeInfo> judgeInfos) {
+        JudgeLogic judgeLogicResult = null;
+        for (JudgeInfo judgeLogic : judgeInfos) {
+            boolean isInLogic = LogicSymbol.judgeInfo(judgeLogic, score);
+            if (isInLogic) {
+                if (null == judgeLogicResult) {
+//                    judgeLogicResult = judgeLogic;
+                } else {
+//                    judgeLogicResult = LogicSymbol.judgeBetter(judgeLogic, judgeLogicResult, score);
+                }
+            }
+        }
+        if (null == judgeLogicResult) {
+            return Optional.empty();
+        }
+//        return Optional.of(judgeLogicResult);
+        return Optional.empty();
+    }
+
 }

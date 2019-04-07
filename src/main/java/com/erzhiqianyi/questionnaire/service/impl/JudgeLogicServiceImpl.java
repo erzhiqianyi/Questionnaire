@@ -1,7 +1,7 @@
 package com.erzhiqianyi.questionnaire.service.impl;
 
 import com.erzhiqianyi.questionnaire.dao.model.JudgeLogic;
-import com.erzhiqianyi.questionnaire.dao.model.LogicSymbol;
+import com.erzhiqianyi.questionnaire.service.bo.LogicSymbol;
 import com.erzhiqianyi.questionnaire.dao.repository.JudgeLogicRepository;
 import com.erzhiqianyi.questionnaire.service.JudgeLogicService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -41,12 +41,14 @@ public class JudgeLogicServiceImpl implements JudgeLogicService {
     public Optional<JudgeLogic> judgeScore(Integer score, List<JudgeLogic> judgeLogics) {
         JudgeLogic judgeLogicResult = null;
         for (JudgeLogic judgeLogic : judgeLogics) {
-            boolean isInLogic = LogicSymbol.judgeLogic(judgeLogic, score);
+            boolean isInLogic = false;
+//                    LogicSymbol.judgeInfo(judgeLogic, score);
             if (isInLogic) {
                 if (null == judgeLogicResult) {
                     judgeLogicResult = judgeLogic;
                 } else {
-                    judgeLogicResult = LogicSymbol.judgeBetter(judgeLogic, judgeLogicResult, score);
+                    judgeLogicResult = null;
+//                            LogicSymbol.judgeBetter(judgeLogic, judgeLogicResult, score);
                 }
             }
         }

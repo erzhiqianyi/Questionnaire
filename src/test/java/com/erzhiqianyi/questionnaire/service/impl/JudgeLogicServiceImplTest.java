@@ -2,7 +2,7 @@ package com.erzhiqianyi.questionnaire.service.impl;
 
 import com.erzhiqianyi.questionnaire.QuestionnaireApplication;
 import com.erzhiqianyi.questionnaire.dao.model.JudgeLogic;
-import com.erzhiqianyi.questionnaire.dao.model.LogicSymbol;
+import com.erzhiqianyi.questionnaire.service.bo.LogicSymbol;
 import com.erzhiqianyi.questionnaire.service.JudgeLogicService;
 import org.junit.Before;
 import org.junit.Test;
@@ -11,7 +11,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.junit4.SpringRunner;
 
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
@@ -73,11 +72,11 @@ public class JudgeLogicServiceImplTest {
                                         String min = subArray[0];
                                         var judgeLogic = new JudgeLogic();
                                         if (!nullStr.equals(min)) {
-                                            judgeLogic.setMinScore(Integer.parseInt(min));
+//                                            judgeLogic.setMinScore(Integer.parseInt(min));
                                         }
                                         String max = subArray[1];
                                         if (!nullStr.equals(max)) {
-                                            judgeLogic.setMaxScore(Integer.parseInt(max));
+//                                            judgeLogic.setMaxScore(Integer.parseInt(max));
                                         }
                                         LogicSymbol symbol = LogicSymbol.symbol(subArray[2]);
                                         judgeLogic.setSymbol(symbol);

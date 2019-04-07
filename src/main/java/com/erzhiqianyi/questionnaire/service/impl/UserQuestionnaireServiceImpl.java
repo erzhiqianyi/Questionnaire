@@ -7,6 +7,7 @@ import com.erzhiqianyi.questionnaire.dao.repository.UserQuestionnaireRepository;
 import com.erzhiqianyi.questionnaire.dto.AnswerGroupDto;
 import com.erzhiqianyi.questionnaire.dto.QuestionGroupDto;
 import com.erzhiqianyi.questionnaire.service.JudgeLogicService;
+import com.erzhiqianyi.questionnaire.service.bo.LogicSymbol;
 import com.erzhiqianyi.questionnaire.service.QuestionnaireService;
 import com.erzhiqianyi.questionnaire.service.UserQuestionnaireService;
 import com.erzhiqianyi.questionnaire.web.payload.UserAnswerRequest;
@@ -17,7 +18,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.util.StringUtils;
 
-import java.util.Collections;
 import java.util.List;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
@@ -102,6 +102,9 @@ public class UserQuestionnaireServiceImpl implements UserQuestionnaireService {
                     if (null == group.getGroupLogic()) {
                         return true;
                     } else {
+
+                        return true;
+                        /*
                         return group.getGroupLogic()
                                 .stream()
                                 .map(dto -> {
@@ -111,9 +114,10 @@ public class UserQuestionnaireServiceImpl implements UserQuestionnaireService {
                                     judgeLogic.setSymbol(dto.getSymbol());
                                     return judgeLogic;
                                 })
-                                .filter(logic -> LogicSymbol.judgeLogic(logic, answer.getScore()))
+                                .filter(logic -> LogicSymbol.judgeInfo(logic, answer.getScore()))
                                 .findAny()
                                 .isPresent();
+                                */
                     }
                 })
                 .collect(Collectors.toList());
@@ -131,7 +135,7 @@ public class UserQuestionnaireServiceImpl implements UserQuestionnaireService {
                         .collect(summingInt(UserAnswer::getScore));
                 break;
         }
-        result.setScore(score);
+//        result.setScore(score);
         return result;
     }
 
@@ -157,7 +161,7 @@ public class UserQuestionnaireServiceImpl implements UserQuestionnaireService {
             var result = new JudgeResult();
             var group = questionGroupMap.get(entry.getKey());
             result.setGroupCode(entry.getKey());
-            result.setScore(entry.getValue());
+//            result.setScore(entry.getValue());
             result.setGroupName(group.getName());
             result.setQuestionGroupId(group.getId());
             var judgeLogic = judgeLogicService.judgeScore(entry.getValue(), questionnaireId, entry.getKey());

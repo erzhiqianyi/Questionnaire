@@ -27,7 +27,7 @@ public class JudgeResult {
 
     private Integer totalCount;
 
-    private Double average;
+    private Double averageScore;
 
     private Integer percent;
 

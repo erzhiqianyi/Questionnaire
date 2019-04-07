@@ -1,4 +1,6 @@
 package com.erzhiqianyi.questionnaire.dao.model;
+import com.erzhiqianyi.questionnaire.service.bo.JudgeInfo;
+import com.erzhiqianyi.questionnaire.service.bo.LogicSymbol;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.ToString;
@@ -12,7 +14,7 @@ import javax.persistence.*;
 @Setter
 @DynamicUpdate
 @ToString
-public class JudgeLogic {
+public class JudgeLogic implements JudgeInfo {
 
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)

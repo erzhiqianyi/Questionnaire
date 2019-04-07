@@ -1,7 +1,7 @@
 package com.erzhiqianyi.questionnaire.web.payload;
 
 import com.erzhiqianyi.questionnaire.dao.model.JudgeLevel;
-import com.erzhiqianyi.questionnaire.dao.model.LogicSymbol;
+import com.erzhiqianyi.questionnaire.service.bo.LogicSymbol;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.ToString;

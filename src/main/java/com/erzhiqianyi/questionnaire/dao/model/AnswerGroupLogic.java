@@ -1,5 +1,6 @@
 package com.erzhiqianyi.questionnaire.dao.model;
 
+import com.erzhiqianyi.questionnaire.service.bo.LogicSymbol;
 import lombok.Getter;
 import lombok.Setter;
 import org.hibernate.annotations.DynamicUpdate;
