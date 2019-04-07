@@ -136,14 +136,14 @@ public enum LogicSymbol implements CheckJudgeInfo {
             case GREATER:
                 return compareMax == 1;
             case BETWEEN:
-               return compareMin == 1 && compareMax == -1;
+                return compareMin == 1 && compareMax == -1;
             case BETWEEN_CLOSE:
-               return (compareMin == 1 || compareMin == 0)
+                return (compareMin == 1 || compareMin == 0)
                         && (compareMax == -1 || compareMax == 0);
             case BETWEEN_R_CLOSE:
-               return compareMin == 1 && (compareMax == -1 || compareMax == 0);
+                return compareMin == 1 && (compareMax == -1 || compareMax == 0);
             case BETWEEN_L_CLOSE:
-               return (compareMin == 1 || compareMin == 0 ) && (compareMax == -1 );
+                return (compareMin == 1 || compareMin == 0) && (compareMax == -1);
 
         }
         return false;
@@ -169,7 +169,7 @@ public enum LogicSymbol implements CheckJudgeInfo {
         }
     }
 
-    private static JudgeInfo judgeBetterNotSame(JudgeInfo one, JudgeInfo another) {
+    public static JudgeInfo judgeBetterNotSame(JudgeInfo one, JudgeInfo another) {
         Double oneMinScore = one.getMinScore();
         Double anotherMinScore = another.getMinScore();
         Double oneMaxScore = one.getMaxScore();
@@ -256,62 +256,101 @@ public enum LogicSymbol implements CheckJudgeInfo {
 
     }
 
-    private static JudgeInfo judgeBetterBySame(JudgeInfo one, JudgeInfo another) {
-        Double oneMinScore = one.getMinScore();
-        Double anotherMinScore = another.getMinScore();
-        Double oneMaxScore = one.getMaxScore();
-        Double anotherMaxScore = another.getMaxScore();
-        int oneMinCompareAnother = Double.compare(oneMinScore, anotherMinScore);
-        int oneMaxComapareAnother = Double.compare(oneMaxScore, anotherMaxScore);
+    public static JudgeInfo judgeBetterBySame(JudgeInfo one, JudgeInfo another) {
+        if (!one.getSymbol().checkJudgeInfo(one) || !another.getSymbol().checkJudgeInfo(another)) {
+            return null;
+        }
+
+        if (one.getSymbol() != another.getSymbol()) {
+            return null;
+        }
+        Double oneMin = one.getMinScore();
+        Double anotherMin = another.getMinScore();
+        Double oneMax = one.getMaxScore();
+        Double anotherMax = another.getMaxScore();
+        int minCompare = -1;
+        if (null != oneMin && null != anotherMin) {
+            minCompare = Double.compare(oneMin, anotherMin);
+        }
+        int maxCompare = -1;
+        if (null != oneMax && null != anotherMax) {
+            maxCompare = Double.compare(oneMax, anotherMax);
+        }
+
         switch (one.getSymbol()) {
             case LESS:
-                if (oneMinCompareAnother == -1) {
-                    return one;
-                } else {
-                    return another;
-                }
+                return minCompare == 1 ? another : one;
             case LESS_OR_EQUALS:
-                if (oneMinCompareAnother == -1 || oneMinCompareAnother == 0) {
-                    return one;
-                } else {
-                    return another;
-                }
-            case EQUALS:
-                return one;
+                return minCompare == 1 || minCompare == 0 ? another : one;
             case GREATER_OR_EQUALS:
-                if (oneMaxComapareAnother == 1 || oneMaxComapareAnother == 0) {
-                    return one;
-                } else {
-                    return another;
-                }
+                return maxCompare == 1 || maxCompare == 0 ? one : another;
             case GREATER:
-                if (oneMaxComapareAnother == 1) {
-                    return one;
-                } else {
-                    return another;
-                }
+                return maxCompare == 1 ? one : another;
             case BETWEEN:
-                if (oneMinCompareAnother == 1 && oneMaxComapareAnother == 1) {
-                    return one;
-                } else {
-                    return another;
-                }
             case BETWEEN_CLOSE:
-                if ((oneMinScore == 1 || oneMinScore == 0) &&
-                        (oneMaxComapareAnother == 1 || oneMaxComapareAnother == 0)) {
-                    return one;
-                } else {
-                    return another;
-                }
+            case BETWEEN_L_CLOSE:
             case BETWEEN_R_CLOSE:
-                if (oneMinCompareAnother == 1 && oneMaxComapareAnother == 1 || oneMaxComapareAnother == 0) {
-                    return one;
-                } else {
-                    return another;
+                switch (minCompare) {
+                    case -1:
+                        return maxCompare == 1 || maxCompare == 0 ? another : null;
+                    case 0:
+                        return maxCompare == 1 ? another : one;
+                    case 1:
+                        return maxCompare == -1 || maxCompare == 0 ? one : null;
                 }
-            default:
-                return null;
+
+
         }
+        return null;
+//        switch (one.getSymbol()) {
+//            case LESS:
+//                if (minCompare == -1) {
+//                    return one;
+//                } else {
+//                    return another;
+//                }
+//            case LESS_OR_EQUALS:
+//                if (minCompare == -1 || minCompare == 0) {
+//                    return one;
+//                } else {
+//                    return another;
+//                }
+//            case EQUALS:
+//                return one;
+//            case GREATER_OR_EQUALS:
+//                if (oneMaxCompareAnother == 1 || oneMaxCompareAnother == 0) {
+//                    return one;
+//                } else {
+//                    return another;
+//                }
+//            case GREATER:
+//                if (oneMaxCompareAnother == 1) {
+//                    return one;
+//                } else {
+//                    return another;
+//                }
+//            case BETWEEN:
+//                if (minCompare == 1 && oneMaxCompareAnother == 1) {
+//                    return one;
+//                } else {
+//                    return another;
+//                }
+//            case BETWEEN_CLOSE:
+//                if ((oneMin == 1 || oneMin == 0) &&
+//                        (oneMaxCompareAnother == 1 || oneMaxCompareAnother == 0)) {
+//                    return one;
+//                } else {
+//                    return another;
+//                }
+//            case BETWEEN_R_CLOSE:
+//                if (minCompare == 1 && oneMaxCompareAnother == 1 || oneMaxCompareAnother == 0) {
+//                    return one;
+//                } else {
+//                    return another;
+//                }
+//            default:
+//                return null;
+//        }
     }
 
     public String getSymbol() {

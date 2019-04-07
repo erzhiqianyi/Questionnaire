@@ -1,12 +1,13 @@
 package com.erzhiqianyi.questionnaire.service.bo;
 
-import com.erzhiqianyi.questionnaire.dao.model.JudgeLogic;
+import com.erzhiqianyi.questionnaire.util.JsonUtil;
 import lombok.extern.log4j.Log4j2;
 import org.junit.Test;
 
 import java.util.Arrays;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
 
 @Log4j2
 public class LogicSymbolTest {
@@ -91,23 +92,36 @@ public class LogicSymbolTest {
                 {"1.5", "BTRC,1.6,2", "0"},
                 {"1.5", "BTRC,1,1.4", "0"},
         };
-        Long i = 1l;
         for (String[] item : judgeInfoRule) {
             Double score = Double.valueOf(item[0]);
-            JudgeLogic judgeLogic = new JudgeLogic();
-            judgeLogic.setId(i++);
-            String[] judgeInfo = item[1].split(",");
-            judgeLogic.setSymbol(LogicSymbol.symbol(judgeInfo[0]));
-            String minxStr = judgeInfo[1];
-            String maxStr = judgeInfo[2];
-            if (!("null".equals(maxStr))) {
-                judgeLogic.setMaxScore(Double.valueOf(maxStr));
-            }
-            if (!("null").equals(minxStr)) {
-                judgeLogic.setMinScore(Double.valueOf(minxStr));
-            }
+            String[] judgeInfoArray = item[1].split(",");
+            String minxStr = judgeInfoArray[1];
+            String maxStr = judgeInfoArray[2];
+            var judgeInfo = new JudgeInfo() {
+                @Override
+                public Double getMinScore() {
+                    if (!("null").equals(minxStr)) {
+                        return Double.valueOf(minxStr);
+                    }
+                    return null;
+                }
+
+                @Override
+                public Double getMaxScore() {
+                    if (!("null".equals(maxStr))) {
+                        return Double.valueOf(maxStr);
+                    }
+                    return null;
+                }
+
+                @Override
+                public LogicSymbol getSymbol() {
+                    return LogicSymbol.symbol(judgeInfoArray[0]);
+                }
+            };
+
             boolean expect = item[2].equalsIgnoreCase("1");
-            boolean result = LogicSymbol.judgeInfo(judgeLogic, score);
+            boolean result = LogicSymbol.judgeInfo(judgeInfo, score);
             log.info(Arrays.toString(item) + " expect[" + expect + "],actual[" + result + "]");
             assertEquals(expect, result);
 
@@ -118,10 +132,129 @@ public class LogicSymbolTest {
 
     @Test
     public void judgeBetter() {
+        String[][] judgeInfoArray = {
+                {""}
+        };
+
+        for (String[] item : judgeInfoArray) {
+
+        }
+    }
+
+    @Test
+    public void judgeBetterBySame() {
+        String[][] judgeInfoArray = {
+                {"LT,1,null", "LT,2,null", "0"},
+                {"LT,2,null", "LT,1,null", "1"},
+                {"LTEQ,1,null", "LTEQ,2,null", "0"},
+                {"LTEQ,2,null", "LTEQ,1,null", "1"},
+                {"GT,null,1", "GT,null,2", "1"},
+                {"GT,null,2", "GT,null,1", "0"},
+                {"GTEQ,null,1", "GTEQ,null,2", "1"},
+                {"GTEQ,null,2", "GTEQ,null,1", "0"},
+                {"BT,1,5", "BT,1,2", "1"},
+                {"BT,1,2", "BT,1,5", "0"},
+                {"BT,2,3", "BT,1,4", "0"},
+                {"BT,2,3", "BT,1,3", "0"},
+                {"BT,1,4", "BT,2,3", "1"},
+                {"BTC,1,5", "BTC,1,2", "1"},
+                {"BTC,1,2", "BTC,1,5", "0"},
+                {"BTC,2,3", "BTC,1,4", "0"},
+                {"BTC,2,3", "BTC,1,3", "0"},
+                {"BTC,1,4", "BTC,2,3", "1"},
+
+        };
+
+        for (String[] item : judgeInfoArray) {
+            String[] infoCsv = item[0].split(",");
+            String[] anotherCsv = item[1].split(",");
+            Integer betterIndex = Integer.valueOf(item[2]);
+            String[] betterCsv = item[betterIndex].split(",");
+            var one = new JudgeInfo() {
+                @Override
+                public Double getMinScore() {
+                    if (!"null".equals(infoCsv[1])) {
+                        return Double.valueOf(infoCsv[1]);
+                    }
+                    return null;
+                }
+
+                @Override
+                public Double getMaxScore() {
+                    if (!"null".equals(infoCsv[2])) {
+                        return Double.valueOf(infoCsv[2]);
+                    }
+                    return null;
+                }
+
+                @Override
+                public LogicSymbol getSymbol() {
+                    return LogicSymbol.symbol(infoCsv[0]);
+                }
+            };
+            var another = new JudgeInfo() {
+                @Override
+                public Double getMinScore() {
+                    if (!"null".equals(anotherCsv[1])) {
+                        return Double.valueOf(anotherCsv[1]);
+                    }
+                    return null;
+                }
+
+                @Override
+                public Double getMaxScore() {
+                    if (!"null".equals(anotherCsv[2])) {
+                        return Double.valueOf(anotherCsv[2]);
+                    }
+                    return null;
+                }
+
+                @Override
+                public LogicSymbol getSymbol() {
+                    return LogicSymbol.symbol(anotherCsv[0]);
+                }
+            };
+            var result = LogicSymbol.judgeBetterBySame(one, another);
+            var better = new JudgeInfo() {
+                @Override
+                public Double getMinScore() {
+                    if (!"null".equals(betterCsv[1])) {
+                        return Double.valueOf(betterCsv[1]);
+                    }
+                    return null;
+                }
+
+                @Override
+                public Double getMaxScore() {
+                    if (!"null".equals(betterCsv[2])) {
+                        return Double.valueOf(betterCsv[2]);
+                    }
+                    return null;
+                }
+
+                @Override
+                public LogicSymbol getSymbol() {
+                    return LogicSymbol.symbol(betterCsv[0]);
+                }
+            };
+            log.info(Arrays.toString(item)
+                    + " expect:" + JsonUtil.toJson(better)
+                    + " actual:" + JsonUtil.toJson(result));
+
+            assertNotNull(result);
+            if (null != better.getMinScore()) {
+                assertEquals(better.getMinScore(), result.getMinScore());
+            }
+            if (null != better.getMaxScore()) {
+                assertEquals(better.getMaxScore(), result.getMaxScore());
+            }
+        }
+
     }
 
     @Test
     public void judgeScore() {
+
     }
 
     @Test
