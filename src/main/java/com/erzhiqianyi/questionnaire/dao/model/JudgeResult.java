@@ -23,7 +23,11 @@ public class JudgeResult {
 
     private String groupName;
 
-    private Integer score;
+    private Integer totalScore;
+
+    private Integer totalCount;
+
+    private Double average;
 
     private Integer percent;
 

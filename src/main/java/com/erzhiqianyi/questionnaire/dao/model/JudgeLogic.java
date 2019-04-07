@@ -22,9 +22,12 @@ public class JudgeLogic {
 
     private String  questionGroupCode ;
 
-    private Integer minScore;
+    private Double minScore;
 
-    private Integer maxScore;
+    private Double maxScore;
+
+    @Enumerated(EnumType.STRING)
+    private JudgeLevel judgeLevel;
 
     @Enumerated(EnumType.STRING)
     private LogicSymbol symbol;

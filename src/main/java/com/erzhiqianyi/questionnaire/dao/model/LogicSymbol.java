@@ -31,48 +31,51 @@ public enum LogicSymbol {
         }
         LogicSymbol logic = judgeLogic.getSymbol();
 
-        Integer minScore = judgeLogic.getMinScore();
-        Integer maxScore = judgeLogic.getMaxScore();
+        Double minScore = judgeLogic.getMinScore();
+        Double maxScore = judgeLogic.getMaxScore();
+        int scoreCompareMinScore = Double.compare(score, minScore);
+        int scoreComapreMaxScore = Double.compare(score, maxScore);
         switch (logic) {
             case LESS:
-                return score < minScore;
+                return scoreCompareMinScore == -1;
             case LESS_OR_EQUALS:
-                return score <= minScore;
+                return scoreCompareMinScore == -1 || score == 0;
             case EQUALS:
                 var minEqual = false;
                 var maxEqual = false;
                 if (null != minScore) {
-                    minEqual = score == minScore;
+                    minEqual = scoreCompareMinScore == 0;
                 }
                 if (null != maxScore) {
-                    maxEqual = score == maxScore;
+                    maxEqual = scoreComapreMaxScore == 0;
                 }
                 return minEqual || maxEqual;
             case GREATER_OR_EQUALS:
-                return score >= maxScore;
+                return scoreComapreMaxScore == 1 || scoreComapreMaxScore == 0;
             case GREATER:
-                return score > maxScore;
+                return scoreComapreMaxScore == 1;
             case BETWEEN:
                 if (null == minScore || null == maxScore) {
                     return false;
                 }
-                return score > minScore && score < maxScore;
+                return scoreCompareMinScore == 1 && scoreComapreMaxScore == -1;
             case BETWEEN_CLOSE:
                 if (null == minScore || null == maxScore) {
                     return false;
                 }
-                return score >= minScore && score <= maxScore;
+                return (scoreCompareMinScore == 1 || scoreComapreMaxScore == 0)
+                        && (scoreComapreMaxScore == -1 || scoreComapreMaxScore == 0);
             case BETEEN_R_CLOSE:
                 if (null == minScore || null == maxScore) {
                     return false;
                 }
-                return score > minScore && score <= maxScore;
+                return scoreCompareMinScore == 1 && (scoreComapreMaxScore == -1 || scoreComapreMaxScore == 0);
         }
         return false;
 
     }
 
-    public static JudgeLogic judgeBetter(JudgeLogic one, JudgeLogic another, Integer score) {
+    public static JudgeLogic judgeBetter(JudgeLogic one, JudgeLogic another) {
         if (null == one && null == another) {
             return null;
         }
@@ -87,24 +90,26 @@ public enum LogicSymbol {
         if (oneSymbol == anotherSymbol) {
             return judgeBetterBySame(one, another);
         } else {
-            return judgeBetterNotSame(one, another, score);
+            return judgeBetterNotSame(one, another);
         }
     }
 
-    private static JudgeLogic judgeBetterNotSame(JudgeLogic one, JudgeLogic another, Integer score) {
-        Integer oneMinScore = one.getMinScore();
-        Integer anotherMinScore = another.getMinScore();
-        Integer oneMaxScore = one.getMaxScore();
-        Integer anotherMaxScore = another.getMaxScore();
+    private static JudgeLogic judgeBetterNotSame(JudgeLogic one, JudgeLogic another) {
+        Double oneMinScore = one.getMinScore();
+        Double anotherMinScore = another.getMinScore();
+        Double oneMaxScore = one.getMaxScore();
+        Double anotherMaxScore = another.getMaxScore();
         LogicSymbol oneSymbol = one.getSymbol();
         LogicSymbol anotherSymbol = another.getSymbol();
+        int oneMinCompareAnother = Double.compare(oneMinScore, anotherMinScore);
+        int oneMaxComapreAnother = Double.compare(oneMaxScore, anotherMaxScore);
         switch (oneSymbol) {
             case LESS:
             case LESS_OR_EQUALS:
                 switch (anotherSymbol) {
                     case LESS:
                     case LESS_OR_EQUALS:
-                        if (oneMinScore < anotherMinScore) {
+                        if (oneMinCompareAnother == 0 || oneMinCompareAnother == -1) {
                             return one;
                         } else {
                             return another;
@@ -113,7 +118,7 @@ public enum LogicSymbol {
                         return another;
                     case BETWEEN:
                     case BETWEEN_CLOSE:
-                        if (oneMinScore < anotherMinScore) {
+                        if (oneMinCompareAnother == -1) {
                             return one;
                         } else {
                             return another;
@@ -128,14 +133,15 @@ public enum LogicSymbol {
                         return another;
                     case GREATER:
                     case GREATER_OR_EQUALS:
-                        if (oneMaxScore > anotherMaxScore) {
+                        if (oneMaxComapreAnother == 1 || oneMaxComapreAnother == 0) {
                             return one;
                         } else {
                             return another;
                         }
                     case BETWEEN:
                     case BETWEEN_CLOSE:
-                        if (oneMaxScore > anotherMaxScore) {
+                    case BETEEN_R_CLOSE:
+                        if (oneMaxComapreAnother == 1 || oneMaxComapreAnother == 0) {
                             return one;
                         } else {
                             return another;
@@ -146,7 +152,7 @@ public enum LogicSymbol {
                 switch (anotherSymbol) {
                     case LESS:
                     case LESS_OR_EQUALS:
-                        if (oneMinScore < anotherMinScore) {
+                        if (oneMinCompareAnother == -1) {
                             return one;
                         } else {
                             return another;
@@ -156,39 +162,41 @@ public enum LogicSymbol {
                     case BETWEEN:
                     case BETWEEN_CLOSE:
                     case BETEEN_R_CLOSE:
-                        if (oneMinScore >= anotherMinScore && oneMaxScore <= anotherMaxScore) {
+                        if ((oneMinCompareAnother == 0 || oneMaxComapreAnother == 1) &&
+                                (oneMaxComapreAnother == -1 || oneMaxComapreAnother == 0)) {
                             return one;
                         } else {
                             return another;
                         }
                     case GREATER:
                     case GREATER_OR_EQUALS:
-                        if (oneMaxScore < anotherMaxScore) {
+                        if (oneMaxComapreAnother == -1) {
                             return one;
                         } else {
                             return another;
                         }
                 }
         }
-
         return null;
 
     }
 
     private static JudgeLogic judgeBetterBySame(JudgeLogic one, JudgeLogic another) {
-        Integer oneMinScore = one.getMinScore();
-        Integer anotherMinScore = another.getMinScore();
-        Integer oneMaxScore = one.getMaxScore();
-        Integer anotherMaxScore = another.getMaxScore();
+        Double oneMinScore = one.getMinScore();
+        Double anotherMinScore = another.getMinScore();
+        Double oneMaxScore = one.getMaxScore();
+        Double anotherMaxScore = another.getMaxScore();
+        int oneMinCompareAnother = Double.compare(oneMinScore, anotherMinScore);
+        int oneMaxComapareAnother = Double.compare(oneMaxScore, anotherMaxScore);
         switch (one.getSymbol()) {
             case LESS:
-                if (oneMinScore < anotherMinScore) {
+                if (oneMinCompareAnother == -1) {
                     return one;
                 } else {
                     return another;
                 }
             case LESS_OR_EQUALS:
-                if (oneMinScore <= anotherMinScore) {
+                if (oneMinCompareAnother == -1 || oneMinCompareAnother == 0) {
                     return one;
                 } else {
                     return another;
@@ -196,31 +204,32 @@ public enum LogicSymbol {
             case EQUALS:
                 return one;
             case GREATER_OR_EQUALS:
-                if (oneMaxScore >= anotherMaxScore) {
+                if (oneMaxComapareAnother == 1 || oneMaxComapareAnother == 0) {
                     return one;
                 } else {
                     return another;
                 }
             case GREATER:
-                if (oneMaxScore > anotherMaxScore) {
+                if (oneMaxComapareAnother == 1) {
                     return one;
                 } else {
                     return another;
                 }
             case BETWEEN:
-                if (oneMinScore > anotherMinScore && oneMaxScore < anotherMaxScore) {
+                if (oneMinCompareAnother == 1 && oneMaxComapareAnother == 1) {
                     return one;
                 } else {
                     return another;
                 }
             case BETWEEN_CLOSE:
-                if (oneMinScore >= anotherMinScore && oneMaxScore <= anotherMaxScore) {
+                if ((oneMinScore == 1 || oneMinScore == 0) &&
+                        (oneMaxComapareAnother == 1 || oneMaxComapareAnother == 0)) {
                     return one;
                 } else {
                     return another;
                 }
             case BETEEN_R_CLOSE:
-                if (oneMinScore > anotherMinScore && oneMaxScore <= anotherMaxScore) {
+                if (oneMinCompareAnother == 1 && oneMaxComapareAnother == 1 || oneMaxComapareAnother == 0) {
                     return one;
                 } else {
                     return another;

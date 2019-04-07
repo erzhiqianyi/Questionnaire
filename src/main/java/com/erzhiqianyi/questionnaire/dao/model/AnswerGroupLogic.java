@@ -17,7 +17,6 @@ public class AnswerGroupLogic {
     @GeneratedValue(strategy = GenerationType.AUTO)
     private Long id;
 
-
     private Long questionnaireId;
 
     private String answerGroupCode;
