@@ -22,9 +22,9 @@ public class AnswerGroupLogic {
 
     private String answerGroupCode;
 
-    private Integer minScore;
+    private Double minScore;
 
-    private Integer maxScore;
+    private Double maxScore;
 
     private String remark;
 

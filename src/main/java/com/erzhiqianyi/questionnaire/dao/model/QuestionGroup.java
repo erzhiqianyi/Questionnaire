@@ -26,5 +26,7 @@ public class QuestionGroup {
     private String remark;
 
 
+    @Enumerated(EnumType.STRING)
+    private CalculationType collectMethod;
 
 }

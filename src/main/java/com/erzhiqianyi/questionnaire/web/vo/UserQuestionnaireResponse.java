@@ -43,7 +43,6 @@ public class UserQuestionnaireResponse {
         this.questionnaireTitle = questionnaire.getTitle();
         this.questionnaireRemark = questionnaire.getRemark();
         this.userId = userQuestionnaire.getUserId();
-        this.totalScore = userQuestionnaire.getTotalScore();
         this.judge = new JudgeResultResponse(judgeLogic);
         initAnswer(questionnaire.getQuestions(), answers);
     }

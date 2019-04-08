@@ -150,7 +150,7 @@ public enum LogicSymbol implements CheckJudgeInfo {
 
     }
 
-    public static JudgeInfo judgeBetter(JudgeInfo one, JudgeInfo another) {
+    public  static <T extends JudgeInfo>  T judgeBetter(T one, T another) {
         if (null == one && null == another) {
             return null;
         }
@@ -162,6 +162,7 @@ public enum LogicSymbol implements CheckJudgeInfo {
         }
         LogicSymbol oneSymbol = one.getSymbol();
         LogicSymbol anotherSymbol = another.getSymbol();
+
         if (oneSymbol == anotherSymbol) {
             return judgeBetterBySame(one, another);
         } else {
@@ -169,94 +170,212 @@ public enum LogicSymbol implements CheckJudgeInfo {
         }
     }
 
-    public static JudgeInfo judgeBetterNotSame(JudgeInfo one, JudgeInfo another) {
-        Double oneMinScore = one.getMinScore();
-        Double anotherMinScore = another.getMinScore();
-        Double oneMaxScore = one.getMaxScore();
-        Double anotherMaxScore = another.getMaxScore();
+    public static  <T extends JudgeInfo> T  judgeBetterNotSame(T one, T another) {
+        if (!one.getSymbol().checkJudgeInfo(one) || !another.getSymbol().checkJudgeInfo(another)) {
+            return null;
+        }
+
+        if (one.getSymbol() == another.getSymbol()) {
+            return null;
+        }
+
+        Double oneMin = one.getMinScore();
+        Double anotherMin = another.getMinScore();
+
+        Double oneMax = one.getMaxScore();
+        Double anotherMax = another.getMaxScore();
+
+
         LogicSymbol oneSymbol = one.getSymbol();
         LogicSymbol anotherSymbol = another.getSymbol();
-        int oneMinCompareAnother = Double.compare(oneMinScore, anotherMinScore);
-        int oneMaxComapreAnother = Double.compare(oneMaxScore, anotherMaxScore);
+
+        int minCompare = -1;
+        if (null != oneMin && null != anotherMin) {
+            minCompare = Double.compare(oneMin, anotherMin);
+        }
+
+        int maxCompare = -1;
+
+        if (null != oneMax && null != anotherMax) {
+            maxCompare = Double.compare(oneMax, anotherMax);
+        }
+
         switch (oneSymbol) {
             case LESS:
-            case LESS_OR_EQUALS:
                 switch (anotherSymbol) {
-                    case LESS:
                     case LESS_OR_EQUALS:
-                        if (oneMinCompareAnother == 0 || oneMinCompareAnother == -1) {
-                            return one;
-                        } else {
-                            return another;
-                        }
+                        return minCompare == -1 || minCompare == 0 ? one : another;
                     case EQUALS:
                         return another;
                     case BETWEEN:
                     case BETWEEN_CLOSE:
-                        if (oneMinCompareAnother == -1) {
-                            return one;
-                        } else {
-                            return another;
+                    case BETWEEN_L_CLOSE:
+                    case BETWEEN_R_CLOSE:
+                        int rightCompare = Double.compare(anotherMax, oneMin);
+                        switch (rightCompare) {
+                            case -1:
+                                return another;
+                            default:
+                                return null;
                         }
+                    default:
+                        return null;
+                }
+            case LESS_OR_EQUALS:
+                switch (anotherSymbol) {
+                    case LESS:
+                        return minCompare == -1 ? one : another;
+                    case EQUALS:
+                        return another;
+                    case BETWEEN:
+                    case BETWEEN_L_CLOSE:
+                    case BETWEEN_R_CLOSE:
+                    case BETWEEN_CLOSE:
+                        int rightCompare = Double.compare(anotherMax, oneMin);
+                        switch (rightCompare) {
+                            case -1:
+                            case 0:
+                                return another;
+                            default:
+                                return null;
+                        }
+                    default:
+                        return null;
                 }
             case EQUALS:
-                return one;
+                switch (anotherSymbol) {
+                    case LESS:
+                        oneMin = null == oneMin ? oneMax : oneMin;
+                        minCompare = Double.compare(oneMin, anotherMin);
+                        if (minCompare == 1 || minCompare == 0) {
+                            return null;
+                        }
+                        return one;
+                    case LESS_OR_EQUALS:
+                        oneMin = null == oneMin ? oneMax : oneMin;
+                        minCompare = Double.compare(oneMin, anotherMin);
+                        if (minCompare == 1) {
+                            return null;
+                        }
+                        return one;
+                    case BETWEEN:
+                    case BETWEEN_CLOSE:
+                    case BETWEEN_R_CLOSE:
+                    case BETWEEN_L_CLOSE:
+                        oneMin = null == oneMin ? oneMax : oneMin;
+                        minCompare = Double.compare(oneMin, anotherMin);
+                        maxCompare = Double.compare(oneMin, anotherMax);
+                        if ((minCompare == 1 || minCompare == 0) &&
+                                (maxCompare == -1 || maxCompare == 0)) {
+                            return one;
+                        } else {
+                            return null;
+                        }
+                    case GREATER:
+                        oneMax = null == oneMax ? oneMin : oneMax;
+                        minCompare = Double.compare(oneMax, anotherMax);
+                        if (minCompare == -1 || minCompare == 0) {
+                            return null;
+                        }
+                        return one;
+                    case GREATER_OR_EQUALS:
+                        oneMax = null == oneMax ? oneMin : oneMax;
+                        minCompare = Double.compare(oneMax, anotherMax);
+                        if (minCompare == -1) {
+                            return null;
+                        }
+                        return one;
+                    default:
+                        return one;
+
+                }
             case GREATER_OR_EQUALS:
+                switch (anotherSymbol) {
+                    case GREATER:
+                        return maxCompare == 1 ? one : another;
+                    case EQUALS:
+                        return another;
+                    case BETWEEN:
+                    case BETWEEN_L_CLOSE:
+                    case BETWEEN_R_CLOSE:
+                    case BETWEEN_CLOSE:
+                        int leftCompare = Double.compare(anotherMin, oneMax);
+                        switch (leftCompare) {
+                            case 0:
+                            case 1:
+                                return another;
+                            default:
+                                return null;
+                        }
+                    default:
+                        return null;
+                }
             case GREATER:
                 switch (anotherSymbol) {
                     case EQUALS:
                         return another;
-                    case GREATER:
                     case GREATER_OR_EQUALS:
-                        if (oneMaxComapreAnother == 1 || oneMaxComapreAnother == 0) {
-                            return one;
-                        } else {
-                            return another;
-                        }
+                        return maxCompare == 1 ? one : another;
                     case BETWEEN:
                     case BETWEEN_CLOSE:
                     case BETWEEN_R_CLOSE:
-                        if (oneMaxComapreAnother == 1 || oneMaxComapreAnother == 0) {
-                            return one;
-                        } else {
-                            return another;
+                        int leftCompare = Double.compare(anotherMin, oneMax);
+                        switch (leftCompare) {
+                            case 0:
+                            case 1:
+                                return another;
+                            default:
+                                return null;
                         }
+                    default:
+                        return null;
                 }
             case BETWEEN:
             case BETWEEN_CLOSE:
+            case BETWEEN_R_CLOSE:
+            case BETWEEN_L_CLOSE:
                 switch (anotherSymbol) {
                     case LESS:
                     case LESS_OR_EQUALS:
-                        if (oneMinCompareAnother == -1) {
+                        maxCompare = Double.compare(oneMax, anotherMin);
+                        if (maxCompare == -1 || maxCompare == 0) {
                             return one;
                         } else {
-                            return another;
+                            return null;
                         }
                     case EQUALS:
                         return another;
-                    case BETWEEN:
-                    case BETWEEN_CLOSE:
-                    case BETWEEN_R_CLOSE:
-                        if ((oneMinCompareAnother == 0 || oneMaxComapreAnother == 1) &&
-                                (oneMaxComapreAnother == -1 || oneMaxComapreAnother == 0)) {
-                            return one;
-                        } else {
-                            return another;
-                        }
                     case GREATER:
                     case GREATER_OR_EQUALS:
-                        if (oneMaxComapreAnother == -1) {
+                        minCompare = Double.compare(oneMin, anotherMax);
+                        if (minCompare == 1 || minCompare == 0) {
                             return one;
                         } else {
-                            return another;
+                            return null;
                         }
+                    case BETWEEN_L_CLOSE:
+                    case BETWEEN_R_CLOSE:
+                    case BETWEEN_CLOSE:
+                    case BETWEEN:
+                        if (( minCompare == 1) &&
+                                (maxCompare == -1 )) {
+                            return one;
+                        } else if ( (  minCompare == -1 ) &&
+                                (maxCompare == 1 )  ){
+                            return another;
+                        }else {
+                            return null;
+                        }
+                    default:
+                        return null;
                 }
+
         }
         return null;
 
     }
 
-    public static JudgeInfo judgeBetterBySame(JudgeInfo one, JudgeInfo another) {
+    public static  <T extends JudgeInfo> T judgeBetterBySame(T one, T another) {
         if (!one.getSymbol().checkJudgeInfo(one) || !another.getSymbol().checkJudgeInfo(another)) {
             return null;
         }
@@ -302,56 +421,7 @@ public enum LogicSymbol implements CheckJudgeInfo {
 
         }
         return null;
-//        switch (one.getSymbol()) {
-//            case LESS:
-//                if (minCompare == -1) {
-//                    return one;
-//                } else {
-//                    return another;
-//                }
-//            case LESS_OR_EQUALS:
-//                if (minCompare == -1 || minCompare == 0) {
-//                    return one;
-//                } else {
-//                    return another;
-//                }
-//            case EQUALS:
-//                return one;
-//            case GREATER_OR_EQUALS:
-//                if (oneMaxCompareAnother == 1 || oneMaxCompareAnother == 0) {
-//                    return one;
-//                } else {
-//                    return another;
-//                }
-//            case GREATER:
-//                if (oneMaxCompareAnother == 1) {
-//                    return one;
-//                } else {
-//                    return another;
-//                }
-//            case BETWEEN:
-//                if (minCompare == 1 && oneMaxCompareAnother == 1) {
-//                    return one;
-//                } else {
-//                    return another;
-//                }
-//            case BETWEEN_CLOSE:
-//                if ((oneMin == 1 || oneMin == 0) &&
-//                        (oneMaxCompareAnother == 1 || oneMaxCompareAnother == 0)) {
-//                    return one;
-//                } else {
-//                    return another;
-//                }
-//            case BETWEEN_R_CLOSE:
-//                if (minCompare == 1 && oneMaxCompareAnother == 1 || oneMaxCompareAnother == 0) {
-//                    return one;
-//                } else {
-//                    return another;
-//                }
-//            default:
-//                return null;
-//        }
-    }
+   }
 
     public String getSymbol() {
         return symbol;
@@ -373,23 +443,25 @@ public enum LogicSymbol implements CheckJudgeInfo {
         return null;
     }
 
-    public Optional<JudgeInfo> judgeScore(Double score, List<JudgeInfo> judgeInfos) {
-        JudgeLogic judgeLogicResult = null;
-        for (JudgeInfo judgeLogic : judgeInfos) {
-            boolean isInLogic = LogicSymbol.judgeInfo(judgeLogic, score);
+    public static <T extends JudgeInfo> Optional<T>  judgeScore(Double score, List<T> judgeInfos) {
+        T judgeLogicResult = null;
+
+        for (T judgeInfo : judgeInfos) {
+            boolean isInLogic = LogicSymbol.judgeInfo(judgeInfo, score);
             if (isInLogic) {
                 if (null == judgeLogicResult) {
-//                    judgeLogicResult = judgeLogic;
+                    judgeLogicResult = judgeInfo;
                 } else {
-//                    judgeLogicResult = LogicSymbol.judgeBetter(judgeLogic, judgeLogicResult, score);
+                    judgeLogicResult = LogicSymbol.judgeBetter(judgeInfo,judgeLogicResult);
                 }
             }
         }
         if (null == judgeLogicResult) {
             return Optional.empty();
         }
-//        return Optional.of(judgeLogicResult);
-        return Optional.empty();
+        return Optional.of(judgeLogicResult);
     }
+
+
 
 }

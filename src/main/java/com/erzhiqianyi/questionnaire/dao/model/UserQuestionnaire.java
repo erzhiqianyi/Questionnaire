@@ -21,8 +21,5 @@ public class UserQuestionnaire {
 
     private String userId;
 
-    private Integer totalScore;
-
-    private Long judgeLogicId;
 
 }

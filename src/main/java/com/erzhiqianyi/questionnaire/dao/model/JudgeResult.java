@@ -17,8 +17,6 @@ public class JudgeResult {
     @GeneratedValue(strategy = GenerationType.AUTO)
     private Long id;
 
-    private Long questionGroupId;
-
     private String groupCode;
 
     private String groupName;
@@ -31,7 +29,8 @@ public class JudgeResult {
 
     private Integer percent;
 
-    private Integer status;
+    @Enumerated(EnumType.STRING)
+    private JudgeLevel level;
 
     @Column(length = 1000)
     private String suggestion;
@@ -40,5 +39,7 @@ public class JudgeResult {
 
     private Long userQuestionnaireId;
 
+    @Enumerated(EnumType.STRING)
+    private CalculationType calculationType;
 
 }

@@ -89,17 +89,6 @@ public class JudgeLogicServiceImplTest {
 
                         }));
     }
-
-    @Test
-    public void judgeScore() {
-        Stream.of(score).forEach(item -> {
-            String[] arr = item.split(",");
-            judgeMap.forEach((key, judge) -> {
-                var judgeLogic = service.judgeScore(Integer.parseInt(arr[0]), judge);
-                assertTrue(judgeLogic.isPresent());
-                assertEquals(arr[1], judgeLogic.get().getMessage());
-            });
-        });
-
-    }
 }
+
+

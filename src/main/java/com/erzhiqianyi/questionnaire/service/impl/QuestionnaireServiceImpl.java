@@ -87,6 +87,7 @@ public class QuestionnaireServiceImpl implements QuestionnaireService {
                             group.setQuestionnaireId(questionnaireId);
                             group.setCollectMethod(request.getCollectMethod());
                             group.setRemark(request.getRemark());
+                            group.setCollectMethod(request.getCollectMethod());
                             return group;
                         }
                 ).collect(Collectors.toList());
@@ -121,6 +122,7 @@ public class QuestionnaireServiceImpl implements QuestionnaireService {
                     group.setName(request.getName());
                     group.setRemark(request.getRemark());
                     group.setQuestionnaireId(questionnaireId);
+                    group.setCollectMethod(request.getCalculationType());
                     questionGroupRepository.save(group);
                     Long groupId = group.getId();
                     var details = request.getQuestions().stream().map(detailRequest -> {
@@ -181,6 +183,7 @@ public class QuestionnaireServiceImpl implements QuestionnaireService {
             groupDto.setName(group.getName());
             groupDto.setQuestionnaireId(questionnaireId);
             groupDto.setRemark(group.getRemark());
+            groupDto.setCalculationType(group.getCollectMethod());
             groupDto.setQuestions(groupDetailMap.get(group.getId())
                     .stream().map(QuestionGroupDetail::getQuestionId).collect(Collectors.toList()));
             return groupDto;
@@ -246,6 +249,8 @@ public class QuestionnaireServiceImpl implements QuestionnaireService {
                 .map(request -> {
                     var judgeLogic = new JudgeLogic();
                     BeanUtils.copyProperties(request, judgeLogic);
+                    judgeLogic.setJudgeLevel(request.getLevel());
+                    judgeLogic.setGroupCode(request.getQuestionGroupCode());
                     judgeLogic.setQuestionnaireId(questionnaireId);
                     return judgeLogic;
                 }).collect(Collectors.toList());

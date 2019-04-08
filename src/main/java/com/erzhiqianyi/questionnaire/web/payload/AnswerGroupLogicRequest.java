@@ -13,9 +13,9 @@ import javax.validation.constraints.Size;
 @Setter
 @ToString
 public class AnswerGroupLogicRequest {
-    private Integer minScore;
+    private Double minScore;
 
-    private Integer maxScore;
+    private Double maxScore;
 
     @NotNull
     private LogicSymbol symbol;
@@ -39,10 +39,10 @@ public class AnswerGroupLogicRequest {
         this.symbol = LogicSymbol.symbol(csv[1].replace(" ",""));
         this.remark = csv[2];
         if (!StringUtils.isEmpty(csv[3])){
-           this.minScore = Integer.valueOf(csv[3].replace(" " ,""));
+           this.minScore = Double.valueOf(csv[3].replace(" " ,""));
         }
         if (!StringUtils.isEmpty(csv[4])){
-           this.maxScore = Integer.valueOf(csv[4].replace(" " ,"")) ;
+           this.maxScore = Double.valueOf(csv[4].replace(" " ,"")) ;
         }
     }
 }

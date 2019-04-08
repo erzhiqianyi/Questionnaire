@@ -1,4 +1,5 @@
 package com.erzhiqianyi.questionnaire.dao.model;
+
 import com.erzhiqianyi.questionnaire.service.bo.JudgeInfo;
 import com.erzhiqianyi.questionnaire.service.bo.LogicSymbol;
 import lombok.Getter;
@@ -22,7 +23,7 @@ public class JudgeLogic implements JudgeInfo {
 
     private Long questionnaireId;
 
-    private String  questionGroupCode ;
+    private String groupCode;
 
     private Double minScore;
 

@@ -11,6 +11,7 @@ import java.util.stream.Collectors;
 @Data
 public class AnswerGroupDto {
     private Long id;
+
     private Long questionnaireId;
 
     private String code;

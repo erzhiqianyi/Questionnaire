@@ -1,5 +1,6 @@
 package com.erzhiqianyi.questionnaire.dto;
 
+import com.erzhiqianyi.questionnaire.dao.model.CalculationType;
 import lombok.Data;
 
 import java.util.List;
@@ -17,4 +18,6 @@ public class QuestionGroupDto {
     private String remark;
 
     private List<Long> questions;
+
+    private CalculationType calculationType;
 }

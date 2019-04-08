@@ -7,5 +7,4 @@ import java.util.List;
 
 public interface JudgeLogicRepository extends JpaRepository<JudgeLogic, Long> {
     List<JudgeLogic> findByQuestionnaireId(Long questionnaireId);
-    List<JudgeLogic> findByQuestionnaireIdAndQuestionGroupCode(Long questionnaireId,String  questionGroupCode);
 }

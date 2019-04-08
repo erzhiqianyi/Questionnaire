@@ -1,20 +1,21 @@
 package com.erzhiqianyi.questionnaire.dto;
 
 import com.erzhiqianyi.questionnaire.dao.model.AnswerGroupLogic;
+import com.erzhiqianyi.questionnaire.service.bo.JudgeInfo;
 import com.erzhiqianyi.questionnaire.service.bo.LogicSymbol;
 import lombok.Data;
 
 @Data
-public class AnswerGroupLogicDto {
+public class AnswerGroupLogicDto implements JudgeInfo {
     private Long id;
 
     private Long questionnaireId;
 
     private String answerGroupCode;
 
-    private Integer minScore;
+    private Double minScore;
 
-    private Integer maxScore;
+    private Double maxScore;
 
     private String remark;
 

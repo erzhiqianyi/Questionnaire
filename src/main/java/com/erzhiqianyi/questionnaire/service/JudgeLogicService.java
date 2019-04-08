@@ -6,10 +6,9 @@ import java.util.List;
 import java.util.Optional;
 
 public interface JudgeLogicService {
-    Optional<JudgeLogic> judgeScore(Integer score, Long questionnaireId, String questionGroup);
-
-    Optional<JudgeLogic> judgeScore(Integer score, List<JudgeLogic> judgeLogics);
 
     Optional<JudgeLogic> getJudgeLogic(Long judgeLogicId);
+
+    List<JudgeLogic> getQuestionnaireJudgeLogic(Long questionnaireId);
 
 }
