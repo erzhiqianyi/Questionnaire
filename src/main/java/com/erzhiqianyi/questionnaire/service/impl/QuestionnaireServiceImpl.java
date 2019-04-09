@@ -57,7 +57,6 @@ public class QuestionnaireServiceImpl implements QuestionnaireService {
         questionnaire.setCode(request.getCode());
         questionnaire.setTitle(request.getTitle());
         questionnaire.setRemark(request.getRemark());
-        questionnaire.setHasGroup(null != request.getQuestionGroup() ? 1 : 0);
         questionnaireRepository.save(questionnaire);
         Long questionnaireId = questionnaire.getId();
         if (null == questionnaireId) {
@@ -250,7 +249,7 @@ public class QuestionnaireServiceImpl implements QuestionnaireService {
                     var judgeLogic = new JudgeLogic();
                     BeanUtils.copyProperties(request, judgeLogic);
                     judgeLogic.setJudgeLevel(request.getLevel());
-                    judgeLogic.setGroupCode(request.getQuestionGroupCode());
+                    judgeLogic.setGroupCode(request.getGroupCode());
                     judgeLogic.setQuestionnaireId(questionnaireId);
                     return judgeLogic;
                 }).collect(Collectors.toList());

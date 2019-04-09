@@ -13,4 +13,8 @@ public enum JudgeLevel {
         this.level = level;
         this.remark = remark;
     }
+
+    public String getLevel() {
+        return level;
+    }
 }

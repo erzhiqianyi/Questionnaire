@@ -28,9 +28,9 @@ public class JudgeLogicRequest {
     @Size(max = 1000)
     private String message;
 
-    private String questionGroupCode;
+    private String groupCode;
 
-    private String questionGroupName;
+    private String groupName;
 
 
     public JudgeLogicRequest() {
@@ -40,8 +40,8 @@ public class JudgeLogicRequest {
         if (null == item || item.length != 6) {
             throw new IllegalArgumentException(" illegal csv data");
         }
-        this.questionGroupCode = item[0].replace(" ", "").toUpperCase();
-        this.questionGroupName = questionGroupName;
+        this.groupCode = item[0].replace(" ", "").toUpperCase();
+        this.groupName = questionGroupName;
         this.symbol = LogicSymbol.symbol(item[1].replace(" ", ""));
         this.level = JudgeLevel.valueOf(item[2].replace(" ",""));
         this.message = item[3];

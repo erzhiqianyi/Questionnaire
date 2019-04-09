@@ -15,11 +15,15 @@ import com.erzhiqianyi.questionnaire.web.payload.UserQuestionnaireRequest;
 import com.erzhiqianyi.questionnaire.web.vo.*;
 import lombok.extern.log4j.Log4j2;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.autoconfigure.SpringBootApplication;
+import org.springframework.orm.hibernate5.SpringBeanContainer;
+import org.springframework.orm.hibernate5.SpringSessionContext;
 import org.springframework.stereotype.Service;
 import org.springframework.util.CollectionUtils;
 import org.springframework.util.StringUtils;
 
 import java.util.*;
+import java.util.stream.Collector;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
@@ -43,6 +47,9 @@ public class UserQuestionnaireServiceImpl implements UserQuestionnaireService {
 
     @Autowired
     private JudgeResultRepository judgeResultRepository;
+
+    @Autowired
+    private DefaultCalScorePercentImpl calScorePercent;
 
     @Override
     public ResponseResult<Long> createUserQuestionnaire(UserQuestionnaireRequest request) {
@@ -71,7 +78,10 @@ public class UserQuestionnaireServiceImpl implements UserQuestionnaireService {
         judgeList.forEach(result -> result.setUserQuestionnaireId(userQuestionnaireId));
 
         userAnswerRepository.saveAll(userAnswer);
-        judgeResultRepository.saveAll(judgeList);
+
+        if (!CollectionUtils.isEmpty(judgeList)){
+            judgeResultRepository.saveAll(judgeList);
+        }
 
 
         return ResponseResult.success("create user questionnaire success", userQuestionnaireId);
@@ -123,7 +133,7 @@ public class UserQuestionnaireServiceImpl implements UserQuestionnaireService {
             });
 
         });
-
+        calScorePercent.calScorePercent(questionGroupJudgeResult);
         return questionGroupJudgeResult;
     }
 
@@ -244,8 +254,25 @@ public class UserQuestionnaireServiceImpl implements UserQuestionnaireService {
 
         List<UserAnswer> answers = userAnswerRepository.findByUserQuestionnaireId(id);
 
-        var userQuestionnaireResponse = new UserQuestionnaireResponse(questionnaire.getResult(), userQuestionnaire, answers, null);
+        var userQuestionnaireResponse = new UserQuestionnaireResponse(questionnaire.getResult(), userQuestionnaire, answers );
         return ResponseResult.success("获取成功", userQuestionnaireResponse);
+    }
+
+    @Override
+    public ResponseResult<List<JudgeResultResponse>> getUserQuestionnaireJudgeResult(Long id) {
+        if (null == id){
+            return ResponseResult.badRequest("暂无记录。");
+        }
+
+        List<JudgeResult> judgeResults = judgeResultRepository.findByUserQuestionnaireId(id);
+        if (CollectionUtils.isEmpty(judgeResults)){
+            return ResponseResult.badRequest("没有结果。");
+        }
+        var response = judgeResults
+                .stream()
+                .map(result -> new JudgeResultResponse(result,id))
+                .collect(Collectors.toList());
+        return ResponseResult.success("获取成功 ",response);
     }
 
 

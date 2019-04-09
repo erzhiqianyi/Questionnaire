@@ -1,7 +1,6 @@
 package com.erzhiqianyi.questionnaire.web.vo;
 
 
-import com.erzhiqianyi.questionnaire.dao.model.JudgeLogic;
 import com.erzhiqianyi.questionnaire.dao.model.UserAnswer;
 import com.erzhiqianyi.questionnaire.dao.model.UserQuestionnaire;
 import lombok.Getter;
@@ -28,22 +27,17 @@ public class UserQuestionnaireResponse {
 
     private String userId;
 
-    private Integer totalScore;
-
-
-    private JudgeResultResponse judge;
 
     private List<UserAnswerResponse> answers;
 
 
-    public UserQuestionnaireResponse(QuestionnaireResponse questionnaire, UserQuestionnaire userQuestionnaire, List<UserAnswer> answers, JudgeLogic judgeLogic) {
+    public UserQuestionnaireResponse(QuestionnaireResponse questionnaire, UserQuestionnaire userQuestionnaire, List<UserAnswer> answers) {
         this.id = userQuestionnaire.getId();
         this.questionnaireId = questionnaire.getId();
         this.questionnaireCode = questionnaire.getCode();
         this.questionnaireTitle = questionnaire.getTitle();
         this.questionnaireRemark = questionnaire.getRemark();
         this.userId = userQuestionnaire.getUserId();
-        this.judge = new JudgeResultResponse(judgeLogic);
         initAnswer(questionnaire.getQuestions(), answers);
     }
 

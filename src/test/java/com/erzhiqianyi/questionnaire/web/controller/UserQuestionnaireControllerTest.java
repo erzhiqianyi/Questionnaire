@@ -3,6 +3,7 @@ package com.erzhiqianyi.questionnaire.web.controller;
 import com.erzhiqianyi.questionnaire.QuestionnaireApplication;
 import com.erzhiqianyi.questionnaire.dao.model.Questionnaire;
 import com.erzhiqianyi.questionnaire.dao.repository.QuestionnaireRepository;
+import com.erzhiqianyi.questionnaire.dao.repository.UserQuestionnaireRepository;
 import com.erzhiqianyi.questionnaire.service.QuestionnaireService;
 import com.erzhiqianyi.questionnaire.util.JsonUtil;
 import com.erzhiqianyi.questionnaire.web.payload.UserAnswerRequest;
@@ -21,6 +22,7 @@ import java.util.stream.Collectors;
 
 import static junit.framework.TestCase.assertNotNull;
 import static junit.framework.TestCase.assertTrue;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
@@ -44,6 +46,9 @@ public class UserQuestionnaireControllerTest {
 
     @Autowired
     private QuestionnaireService questionnaireService;
+
+    @Autowired
+    private UserQuestionnaireRepository userQuestionnaireRepository;
 
     @Before
     public void init() {
@@ -73,7 +78,6 @@ public class UserQuestionnaireControllerTest {
     @Test
     public void createUserQuestionnaire() throws Exception {
         String data = JsonUtil.toJson(userQuestionnaireRequest);
-        System.out.println(data);
         mockMvc.perform(
                 post("/user/questionnaire")
                         .contentType(MediaType.APPLICATION_JSON)
@@ -84,5 +88,17 @@ public class UserQuestionnaireControllerTest {
 
     }
 
+    @Test
+    public void getUserQuestionnaireJudgeResult() throws Exception {
+        Long id = userQuestionnaireRepository.findAll().stream().findAny().get().getId();
+        assertNotNull(id);
+        mockMvc.perform(
+                get("/user/questionnaire/result/"+id))
+                .andDo(print())
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("code").value("200"));
+
+
+    }
 
 }

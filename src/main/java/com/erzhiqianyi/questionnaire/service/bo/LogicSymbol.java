@@ -1,6 +1,5 @@
 package com.erzhiqianyi.questionnaire.service.bo;
 
-import com.erzhiqianyi.questionnaire.dao.model.JudgeLogic;
 import org.springframework.util.StringUtils;
 
 import java.util.List;

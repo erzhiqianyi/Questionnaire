@@ -24,5 +24,4 @@ public class Questionnaire {
     @Column(length = 500)
     private String remark;
 
-    private Integer hasGroup;
 }

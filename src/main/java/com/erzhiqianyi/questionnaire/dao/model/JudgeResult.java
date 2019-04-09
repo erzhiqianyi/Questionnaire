@@ -27,7 +27,7 @@ public class JudgeResult {
 
     private Double averageScore;
 
-    private Integer percent;
+    private Double percent;
 
     @Enumerated(EnumType.STRING)
     private JudgeLevel level;
