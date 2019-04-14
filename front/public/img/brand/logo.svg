@@ -1,0 +1,28 @@
+<svg width="707.1" height="200" xmlns="http://www.w3.org/2000/svg">
+ <style type="text/css">.st0{fill:#1FA8D7;}
+	.st1{fill:#FFFFFF;}
+	.st2{opacity:4.000000e-02;stroke:#FFFFFF;stroke-miterlimit:10;}
+	.st3{opacity:8.000000e-02;stroke:#FFFFFF;stroke-miterlimit:10;}
+	.st4{opacity:0;stroke:#FFFFFF;stroke-miterlimit:10;}
+	.st5{fill:#333333;}
+	.st6{fill:#1EA7D6;}</style>
+
+ <g>
+  <title>background</title>
+  <rect fill="none" id="canvas_background" height="857" width="1662" y="-1" x="-1"/>
+ </g>
+ <g>
+  <title>Layer 1</title>
+  <polygon id="svg_1" points="0,150 0,50 86.6,0 173.2,50 173.2,150 86.6,200 " class="st0"/>
+  <polygon id="svg_2" points="86.6,133.3 57.7,116.7 57.7,83.3 86.6,66.7 115.5,83.3 144.3,66.7 86.6,33.3 28.9,66.7 28.9,133.3   86.6,166.7 144.3,133.3 115.5,116.7 " class="st1"/>
+  <polygon id="svg_3" points="0,50 86.6,100 86.6,0 " class="st2"/>
+  <polygon id="svg_4" points="0,150 86.6,200 86.6,100 " class="st2"/>
+  <polygon id="svg_5" points="86.6,100 173.2,150 173.2,50 " class="st3"/>
+  <polygon id="svg_6" points="86.6,100 0,50 0,150 " class="st4"/>
+  <polygon id="svg_7" points="173.2,150 86.6,100 86.6,200 " class="st3"/>
+  <polygon id="svg_8" points="173.2,50 86.6,0 86.6,100 " class="st3"/>
+  <g fill="none" id="svg_9">
+   <text stroke="null" transform="matrix(5.385029067464186,0,0,6.395505695995542,-1042.0009301002367,-529.2205108243801) " xml:space="preserve" text-anchor="start" font-family="Helvetica, Arial, sans-serif" font-size="24" id="svg_16" y="106.226231" x="228.45575" stroke-opacity="null" stroke-width="0" fill="#000000">有空问卷</text>
+  </g>
+ </g>
+</svg>
