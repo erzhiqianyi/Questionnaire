@@ -2,40 +2,38 @@ export default {
   items: [
     {
       name: '首页',
-      url: '/dashboard',
+      url: '/index',
       icon: 'icon-speedometer',
       badge: {
         variant: 'primary',
         text: ''
       }
     },
+  
     {
-      name: '页面',
-      url: '/pages',
-      icon: 'icon-star',
+      name: '问卷管理',
+      url: '/questionnaire',
+      icon: 'icon-puzzle',
       children: [
         {
-          name: '登录',
-          url: '/pages/login',
-          icon: 'icon-star'
+          name: '我的问卷',
+          url: '/questionnaire/list',
+          icon: 'icon-list'
         },
         {
-          name: '注册',
-          url: '/pages/register',
-          icon: 'icon-star'
+          name: '答卷',
+          url: '/questionnaire/answer',
+          icon: 'icon-check'
         },
         {
-          name: ' 404',
-          url: '/pages/404',
-          icon: 'icon-star'
+          name: '统计分析',
+          url: '/questionnaire/analysis',
+          icon: 'icon-chart'
         },
-        {
-          name: ' 500',
-          url: '/pages/500',
-          icon: 'icon-star'
-        }
-      ]
-    },
 
+
+
+      ]
+    }
   ]
 }

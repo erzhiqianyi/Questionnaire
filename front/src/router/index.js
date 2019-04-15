@@ -15,6 +15,13 @@ const Page500 = () => import('@/views/pages/Page500')
 const Login = () => import('@/views/pages/Login')
 const Register = () => import('@/views/pages/Register')
 
+
+
+
+const Questionnaire = () => import('@/views/questionnaire/QuetsionnaireList')
+const Answer = () => import('@/views/questionnaire/AnswerList')
+const Analysis = () => import('@/views/questionnaire/AnalysisList')
+
 Vue.use(Router)
 
 export default new Router({
@@ -24,15 +31,41 @@ export default new Router({
   routes: [
     {
       path: '/',
-      redirect: '/dashboard',
+      redirect: '/index',
       name: 'Home',
       component: DefaultContainer,
       children: [
         {
-          path: 'dashboard',
-          name: 'Dashboard',
+          path: 'index',
+          name: 'index',
           component: Dashboard
         },
+       
+        {
+          path: '/questionnaire',
+          name: '问卷管理',
+          component: {
+            render(c) { return c('router-view') }
+          },
+          children: [
+            {
+              path: 'list',
+              name: '我的问卷',
+              component: Questionnaire
+            },
+            {
+              path: 'answer',
+              name: '答卷',
+              component: Answer
+            },
+            {
+              path: 'analysis',
+              name: '答卷',
+              component: Analysis
+            }
+
+          ]
+        }
       ]
     },
     {
@@ -40,7 +73,7 @@ export default new Router({
       redirect: '/pages/404',
       name: 'Pages',
       component: {
-        render (c) { return c('router-view') }
+        render(c) { return c('router-view') }
       },
       children: [
         {
