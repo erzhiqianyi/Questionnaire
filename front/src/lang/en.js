@@ -5,13 +5,17 @@ export default {
     pagePermission: 'Page Permission',
     rolePermission: 'Role Permission',
     directivePermission: 'Directive Permission',
-    externalLink: 'External Link'
+    externalLink: 'External Link',
+    questionnaire: 'questionnaire',
+    mineQuestionnaire: 'mine',
+    questionnaireAnalysis: 'analysis',
+    createQuestionnaire: '新增问卷'
   },
   navbar: {
     logOut: 'Log Out',
     dashboard: 'Dashboard',
     github: 'Github',
-    theme: 'Theme',
+    theme: 'Theme'
   },
   login: {
     title: 'Login Form',
@@ -38,5 +42,26 @@ export default {
     tagsView: 'Open Tags-View',
     fixedHeader: 'Fixed Header',
     sidebarLogo: 'Sidebar Logo'
+  },
+  questionnaire: {
+    addQuestionnaire: 'new Questionnaire',
+    title: 'title',
+    recycle: 'recycle count',
+    setType: ' set questionnaire type'
+  },
+  constant: {
+    search: 'search',
+    name: 'name',
+    status: 'status',
+    createTime: 'createTime',
+    actions: 'operateion',
+    id: 'id',
+    edit: 'edit',
+    analysis: 'analysis',
+    delete: 'delete',
+    stop: 'stop',
+    publish: 'publish',
+    bell: 'bell'
+
   }
 }

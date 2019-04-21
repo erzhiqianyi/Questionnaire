@@ -1,5 +1,5 @@
-
 const tokens = {
+
   admin: {
     token: 'admin-token'
   },

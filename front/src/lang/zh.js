@@ -5,13 +5,17 @@ export default {
     rolePermission: '角色权限',
     pagePermission: '页面权限',
     directivePermission: '指令权限',
-    externalLink: '外链'
+    externalLink: '外链',
+    questionnaire: '问卷管理',
+    mineQuestionnaire: '我的问卷',
+    questionnaireAnalysis: '统计分析',
+    createQuestionnaire: '创建问卷'
   },
   navbar: {
     logOut: '退出登录',
     dashboard: '首页',
     github: '项目地址',
-    theme: '换肤',
+    theme: '换肤'
   },
   login: {
     title: '系统登录',
@@ -38,5 +42,26 @@ export default {
     tagsView: '开启 Tags-View',
     fixedHeader: '固定 Header',
     sidebarLogo: '侧边栏 Logo'
+  },
+  questionnaire: {
+    addQuestionnaire: '创建问卷',
+    title: '名字',
+    recycle: '答卷',
+    setType: '选择问卷类型'
+  },
+  constant: {
+    search: '搜索',
+    name: '名字',
+    status: '状态',
+    createTime: '创建时间',
+    actions: '操作',
+    id: '编号',
+    edit: '编辑',
+    analysis: '统计',
+    delete: '删除',
+    stop: '停止',
+    publish: '发布',
+    bell: '提醒'
+
   }
 }

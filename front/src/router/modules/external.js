@@ -1,4 +1,3 @@
-
 /* Layout */
 import Layout from '@/layout'
 
