@@ -17,6 +17,7 @@ export default {
                     icon: 'el-icon-info'
                 },
                 {
+                    code: 'question',
                     name: '添加题目',
                     description: '设置题目',
                     icon: 'el-icon-edit'
@@ -41,7 +42,7 @@ export default {
                 },
                 {
                     code: 'create',
-                    name: '创建问卷',
+                    name: '创建投票',
                     description: '投票基本信息',
                     icon: 'el-icon-info'
                 },
