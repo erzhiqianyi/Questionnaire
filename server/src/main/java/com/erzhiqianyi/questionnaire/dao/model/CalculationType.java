@@ -27,5 +27,13 @@ public enum CalculationType {
                 .filter(type -> type.operate.equals(code))
                 .findFirst().get();
     }
+
+    public String getOperate() {
+        return operate;
+    }
+
+    public String getRemark() {
+        return remark;
+    }
 }
 
